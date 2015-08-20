@@ -14,6 +14,14 @@ dataset$B.2.2.a.If.you.feel.comfortable.describe.any.inappropriate.conduct.or.se
 likert_levels <- c("Very unsatisfied", "Somewhat unsatisfied", "Somewhat satisfied", "Very satisfied")
 agree_levels <- c("Disagree", "Somewhat disagree", "Somewhat agree", "Agree")
 
+### questions that need to be printed out
+questions <- c('B.1.1', 'B.1.3', 'B.2.1', 'B.2.2', 'C.1', #overall program satisfaction
+               "L.4", "L.5", "L.6", 'L.3.a', 'L.2.a', #internship/field experience
+               "N.1.1", "N.1.3", "N.2.1", "N.2.2", "N.3.1", "N.4.1", #satisfaction in first university
+               "O.1.1", "O.1.3", "O.2.1", "O.2.2", "O.3.1", "O.4.1", #satisfaction in second university
+               "P.1.1", "P.1.3", "P.2.1", "P.2.2", "P.3.1", "P.4.1", #satisfaction in third university
+               "Q.1.1", "Q.1.3", "Q.2.1", "Q.2.2", "Q.3.1", "Q.4.1") #satisfaction in fourth university
+
 ### finding out courses with 10 or more respondents in the dataset
 tenormore <- dataset %>%
   select(A.2.Select.the.name.of.Erasmus.Mundus.master.course._Response.) %>%
@@ -42,6 +50,19 @@ overall <- select(dataset,
 ### function for printing out the likert plot about each individual section of a survey. It also prints out information about 
 ### Cronbach's alpha level. Can be used further to create similar plots for each individual course.
 
+printing_alpha <- function(x, question){
+  if (sum(complete.cases(question)) > 0){ # calculating Cronbach's alpha only for cases where complete cases exist
+    question_alpha <- psych::alpha(data.matrix(question))
+    question_alpha_head <- xtable(question_alpha$total, caption = sprintf("Statistics for %s question", x))
+    print.xtable(question_alpha_head, type = "html", file = sprintf("./Question_statistics/%s_alpha.html", x))
+    question_alpha_drop <- xtable(question_alpha$alpha.drop, caption = sprintf("What if each individual dimension is dropped for %s question", x))
+    print.xtable(question_alpha_drop, type = "html", file = sprintf("./Question_statistics/%s_drop.html", x))
+    question_alpha_stats <- xtable(question_alpha$item.stats, caption = sprintf("Summary statistics for %s question", x))
+    print.xtable(question_alpha_stats, type = "html", file = sprintf("./Question_statistics/%s_stats.html", x))
+  }
+}
+
+
 ### x = name of the question to be printed
 ### dataset = which dataset should be used to extract data from. Default = overall.
 questionprint <- function(x, dataset = overall){
@@ -63,69 +84,58 @@ questionprint <- function(x, dataset = overall){
   
   ### checking to see to have more than 10 answers in each column, otherwise delete it
   question <- question[, colSums(!is.na(question)) > 10]
-  
+
   ### checking to see if question has more than 1 dimension with 10 or more respondents to proceed. 
   ### Otherwise it doesn't make sense to calculate Cronbach's alpha and plot
-  if (dim(question)[2] > 1) {  
-  ### calculating Cronbach's alpha
-    if (sum(complete.cases(question)) > 0){ # calculating Cronbach's alpha only for cases where complete cases exist
-      question_alpha <- psych::alpha(data.matrix(question))
-      question_alpha_head <- xtable(question_alpha$total, caption = sprintf("Statistics for %s question", x))
-      print.xtable(question_alpha_head, type = "html", file = sprintf("./Question_statistics/%s_alpha.html", x))
-      question_alpha_drop <- xtable(question_alpha$alpha.drop, caption = sprintf("What if each individual dimension is dropped for %s question", x))
-      print.xtable(question_alpha_drop, type = "html", file = sprintf("./Question_statistics/%s_drop.html", x))
-      question_alpha_stats <- xtable(question_alpha$item.stats, caption = sprintf("Summary statistics for %s question", x))
-      print.xtable(question_alpha_stats, type = "html", file = sprintf("./Question_statistics/%s_stats.html", x))
+  if (!is.null(dim(question)[2])){
+    if (dim(question)[2] > 1) {
+    
+      ### calculating Cronbach's alpha. If there is an error it won't print out anything
+      try(printing_alpha(x, question))
+      
+      ### creating likert-type variable to print it out
+      questionl <- likert(question) #creating likert-type variable for plotting
+      wrap_function <- wrap_format(120) #wrap-function to print question correctly
+      name_of_the_question <- wrap_function(name_of_the_question)
+    
+      
+      ### printing out the file
+      p <- plot(questionl, 
+                plot.percents = TRUE, # displaying percents for each answer
+                plot.percent.low = FALSE,  # displaying cummulative percents for negative answers
+                plot.percent.high = FALSE, # displaying cummulative percents for positive answers
+                centered = FALSE, # stretcthing the bar from left to right
+                text.size = 1.5, 
+                wrap = 50, # wrap statement for dimension names
+                legend.position = "top") + 
+        ggtitle(name_of_the_question) + # title of the question
+        theme(text = element_text(size = 7), # setting the text size of the plot
+              plot.margin = unit(c(0, 0.8, 0.3, 0), "lines"), # decreasing white space around the plot
+              legend.margin = unit(0, "lines"), # deleting space around legend
+              legend.key.size = unit(0.5, "lines"), # decreasing size of legend elements
+              legend.background = element_rect(colour = "gray", fill = NA, size = 0.1)) + # adding a frame around the legend
+        geom_hline(yintercept=seq(25, 75, by=25), linetype = "dashed", size = 0.2) + # adding dashed lines at 25, 50, 75% to make it more clear
+        coord_flip(ylim = c(-1,101)) #reducing white space left to 0 and right to 100
+      ggsave(filename = sprintf("./Question_statistics/%s.png", x), plot = p, units = "mm", width = 180, height = (25 + dim(question)[2]*8)) #making graph a little rubbery
     }
-    
-    ### creating likert-type variable to print it out
-    questionl <- likert(question) #creating likert-type variable for plotting
-    wrap_function <- wrap_format(120) #wrap-function to print question correctly
-    name_of_the_question <- wrap_function(name_of_the_question)
-  
-    
-    ### printing out the file
-    p <- plot(questionl, 
-              plot.percents = TRUE, # displaying percents for each answer
-              plot.percent.low = FALSE,  # displaying cummulative percents for negative answers
-              plot.percent.high = FALSE, # displaying cummulative percents for positive answers
-              centered = FALSE, # stretcthing the bar from left to right
-              text.size = 1.5, 
-              wrap = 50, # wrap statement for dimension names
-              legend.position = "top") + 
-      ggtitle(name_of_the_question) + # title of the question
-      theme(text = element_text(size = 7), # setting the text size of the plot
-            plot.margin = unit(c(0, 0.8, 0.3, 0), "lines"), # decreasing white space around the plot
-            legend.margin = unit(0, "lines"), # deleting space around legend
-            legend.key.size = unit(0.5, "lines"), # decreasing size of legend elements
-            legend.background = element_rect(colour = "gray", fill = NA, size = 0.1)) + # adding a frame around the legend
-      geom_hline(yintercept=seq(25, 75, by=25), linetype = "dashed", size = 0.2) + # adding dashed lines at 25, 50, 75% to make it more clear
-      coord_flip(ylim = c(-1,101)) #reducing white space left to 0 and right to 100
-    ggsave(filename = sprintf("./Question_statistics/%s.png", x), plot = p, units = "mm", width = 180, height = (25 + dim(question)[2]*8)) #making graph a little rubbery
   }
 }
 
-### questions that need to be printed out
-questions <- c('B.1.1', 'B.1.3', 'B.2.1', 'B.2.2', 'C.1', #overall program satisfaction
-               "L.4", "L.5", "L.6", 'L.3.a', 'L.2.a', #internship/field experience
-               "N.1.1", "N.1.3", "N.2.1", "N.2.2", "N.3.1", "N.4.1", #satisfaction in first university
-               "O.1.1", "O.1.3", "O.2.1", "O.2.2", "O.3.1", "O.4.1", #satisfaction in second university
-               "P.1.1", "P.1.3", "P.2.1", "P.2.2", "P.3.1", "P.4.1", #satisfaction in third university
-               "Q.1.1", "Q.1.3", "Q.2.1", "Q.2.2", "Q.3.1", "Q.4.1") #satisfaction in fourth university
-
+### creating summary plots for every question in the dataset
 for (i  in seq_along(questions))
   questionprint(questions[i])
 
-mainDir <- "C:/Users/Misha/Dropbox/Projects/EM Internship/Quantitative team/2015/Course_statistics"
 
-for (i in seq(1,5)){
+### creating summary plots for every course and every question in the dataset
+mainDir <- "C:/Users/Misha/Dropbox/Projects/EM Internship/Quantitative team/2015/Course_statistics"
+for (i in seq_along(tenormore$Course)){
   setwd(file.path(mainDir)) # setting the directory
   
   #subsetting to relevant course
   course_dataset <- dataset[dataset$A.2.Select.the.name.of.Erasmus.Mundus.master.course._Response. == tenormore$Course[i],] 
   
   #storing the name of the course as a character
-  subDir <- as.character(tenormore$Course[i]) 
+  subDir <- make.names(as.character(tenormore$Course[i])) 
   
   #reating a directory for a course
   ifelse(!dir.exists(file.path(mainDir, subDir)), dir.create(file.path(mainDir, subDir)), FALSE) 
@@ -135,4 +145,50 @@ for (i in seq(1,5)){
   ifelse(!dir.exists("./Question_statistics/"), dir.create(file.path("./Question_statistics/")), FALSE) 
   for (i  in seq_along(questions))
     questionprint(questions[i], dataset = course_dataset)
+}
+
+
+overall <- overall[(overall$A.2.Select.the.name.of.Erasmus.Mundus.master.course._Response. %in% tenormore$Course),]
+
+### creating heatmaps for means of every question and every course
+setwd("C:/Users/Misha/Dropbox/Projects/EM Internship/Quantitative team/2015")
+for (i in seq_along(questions)){
+  #calculating means for the given question
+  mean <- overall %>%
+    select(A.2.Select.the.name.of.Erasmus.Mundus.master.course._Response.,
+           starts_with(questions[i])) %>%
+    group_by(A.2.Select.the.name.of.Erasmus.Mundus.master.course._Response.) %>%
+    summarise_each(funs(mean(., na.rm = TRUE)))
+  
+  #storing the names of the courses for future use
+  rownames_store <- mean$A.2.Select.the.name.of.Erasmus.Mundus.master.course._Response.
+  mean$A.2.Select.the.name.of.Erasmus.Mundus.master.course._Response. <- NULL
+  
+  #logical vector to find out rows with all NA's
+  vector <- !!rowSums(!is.na(mean)) 
+  
+  mean <- mean[vector,] #deleting the rows with all NA's
+  rownames(mean) <- rownames_store[vector] #writing down the names of the courses
+  colnames(mean) <- gsub("\\.", " ", colnames(mean)) #making names of questions readable
+  colnames(mean) <- gsub("(.*?)_(.*)", "\\2", colnames(mean)) #leaving just the dimension name
+  wrap_function_x <- wrap_format(35)
+  colnames(mean) <- wrap_function_x(colnames(mean))
+  wrap_function_y <- wrap_format(50)
+  rownames(mean) <- wrap_function_y(rownames(mean))
+  
+  #creating the matrix for printing it out in ggplot
+  #mean_matrix <- data.matrix(mean)
+  mean_matrix <- scale(data.matrix(mean))
+  mean_matrix_melted <- melt(mean_matrix)
+  
+  #plotting the heatmap
+  p <- ggplot(mean_matrix_melted, aes(x = X2, y = X1)) + 
+        ggtitle(as.character(questions[i])) +
+        geom_tile(aes(fill = value)) + 
+        scale_fill_gradient(low = "red", high = "green") + #, limits = c(1,4)
+        theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),          
+              axis.title.x=element_blank(),
+              axis.title.y=element_blank()) 
+  
+  ggsave(filename = sprintf("./Heatmaps_scaled/%s.png", questions[i]), plot = p, units = "mm", width = 250, height = (35 + sum(vector)*4))
 }
