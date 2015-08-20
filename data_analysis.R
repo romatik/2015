@@ -117,6 +117,7 @@ for (i  in seq_along(questions))
   questionprint(questions[i])
 
 mainDir <- "C:/Users/Misha/Dropbox/Projects/EM Internship/Quantitative team/2015/Course_statistics"
+
 for (i in seq(1,5)){
   setwd(file.path(mainDir)) # setting the directory
   
