@@ -4,6 +4,7 @@ library(scales)
 library(psych)
 library(reshape)
 library(grid)
+library(RColorBrewer)
 
 dataset <- read.csv("../Media/2015/Master_tables/bigtable.csv", na.strings = c("", " ", "No answer", "N/A", "NA"), header = TRUE)
 dataset$X <- NULL
@@ -152,43 +153,63 @@ overall <- overall[(overall$A.2.Select.the.name.of.Erasmus.Mundus.master.course.
 
 ### creating heatmaps for means of every question and every course
 setwd("C:/Users/Misha/Dropbox/Projects/EM Internship/Quantitative team/2015")
+
+# http://stackoverflow.com/questions/32136304/conditional-calculation-of-mean
+f1 <- function(x) if(sum(!is.na(x))>9) mean(as.numeric(x), na.rm=TRUE) else NA_real_
+
+### different colors depending on scaled/not scaled
+#mycolors <- brewer.pal(length(seq(1,4, by = 0.5)), "BrBG)
+mycolors <- brewer.pal(length(c(-Inf,-2:2,Inf)), "BrBG")
+
 for (i in seq_along(questions)){
   #calculating means for the given question
-  mean <- overall %>%
+  means <- overall %>%
     select(A.2.Select.the.name.of.Erasmus.Mundus.master.course._Response.,
            starts_with(questions[i])) %>%
     group_by(A.2.Select.the.name.of.Erasmus.Mundus.master.course._Response.) %>%
-    summarise_each(funs(mean(., na.rm = TRUE)))
+    summarise_each(funs(f1))
   
   #storing the names of the courses for future use
-  rownames_store <- mean$A.2.Select.the.name.of.Erasmus.Mundus.master.course._Response.
-  mean$A.2.Select.the.name.of.Erasmus.Mundus.master.course._Response. <- NULL
+  rownames_store <- means$A.2.Select.the.name.of.Erasmus.Mundus.master.course._Response.
+  means$A.2.Select.the.name.of.Erasmus.Mundus.master.course._Response. <- NULL
   
   #logical vector to find out rows with all NA's
-  vector <- !!rowSums(!is.na(mean)) 
+  vector <- !!rowSums(!is.na(means)) 
   
-  mean <- mean[vector,] #deleting the rows with all NA's
-  rownames(mean) <- rownames_store[vector] #writing down the names of the courses
-  colnames(mean) <- gsub("\\.", " ", colnames(mean)) #making names of questions readable
-  colnames(mean) <- gsub("(.*?)_(.*)", "\\2", colnames(mean)) #leaving just the dimension name
+  means <- means[vector,] #deleting the rows with all NA's
+  rownames(means) <- rownames_store[vector] #writing down the names of the courses
+  colnames(means) <- gsub("\\.", " ", colnames(means)) #making names of questions readable
+  colnames(means) <- gsub("(.*?)_(.*)", "\\2", colnames(means)) #leaving just the dimension name
   wrap_function_x <- wrap_format(35)
-  colnames(mean) <- wrap_function_x(colnames(mean))
+  colnames(means) <- wrap_function_x(colnames(means))
   wrap_function_y <- wrap_format(50)
-  rownames(mean) <- wrap_function_y(rownames(mean))
+  rownames(means) <- wrap_function_y(rownames(means))
   
   #creating the matrix for printing it out in ggplot
-  #mean_matrix <- data.matrix(mean)
-  mean_matrix <- scale(data.matrix(mean))
-  mean_matrix_melted <- melt(mean_matrix)
+### scaling/not scaling
+#  means_matrix <- data.matrix(means)        
+  means_matrix <- scale(data.matrix(means))
+  means_matrix_melted <- melt(means_matrix)
+  
+  
+### different ways to cut values depending if scaled/not scaled
+#  means_matrix_melted$value1 <- cut(means_matrix_melted$value, seq(1,4, by = 0.5), right = FALSE)
+  means_matrix_melted$value1 <- cut(means_matrix_melted$value, c(-Inf,-2:2,Inf), right = FALSE) 
+
   
   #plotting the heatmap
-  p <- ggplot(mean_matrix_melted, aes(x = X2, y = X1)) + 
+  p <- ggplot(means_matrix_melted, aes(x = X2, y = X1)) + 
         ggtitle(as.character(questions[i])) +
-        geom_tile(aes(fill = value)) + 
-        scale_fill_gradient(low = "red", high = "green") + #, limits = c(1,4)
+        geom_tile(aes(fill = value1)) + 
+        scale_fill_manual(name = levels(means_matrix_melted$value1), 
+                          values = mycolors,
+                          na.value = "black",
+                          drop = FALSE) + # not dropping levels with 0 
         theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),          
-              axis.title.x=element_blank(),
-              axis.title.y=element_blank()) 
+          axis.title.x=element_blank(),
+          axis.title.y=element_blank()) 
   
-  ggsave(filename = sprintf("./Heatmaps_scaled/%s.png", questions[i]), plot = p, units = "mm", width = 250, height = (35 + sum(vector)*4))
+#  ggsave(filename = sprintf("./Heatmaps/%s.png", questions[i]), plot = p, units = "mm", width = 250, height = (70 + sum(vector)*4))
+  ggsave(filename = sprintf("./Heatmaps_scaled/%s.png", questions[i]), plot = p, units = "mm", width = 250, height = (70 + sum(vector)*4))
 }
+
