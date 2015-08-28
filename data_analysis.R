@@ -155,6 +155,7 @@ overall <- overall[(overall$A.2.Select.the.name.of.Erasmus.Mundus.master.course.
 setwd("C:/Users/Misha/Dropbox/Projects/EM Internship/Quantitative team/2015")
 
 # http://stackoverflow.com/questions/32136304/conditional-calculation-of-mean
+# function calculates the mean only if there are 10 or more respondents to each individual question
 f1 <- function(x) if(sum(!is.na(x))>9) mean(as.numeric(x), na.rm=TRUE) else NA_real_
 
 ### different colors depending on scaled/not scaled
@@ -213,3 +214,5 @@ for (i in seq_along(questions)){
   ggsave(filename = sprintf("./Heatmaps_scaled/%s.png", questions[i]), plot = p, units = "mm", width = 250, height = (70 + sum(vector)*4))
 }
 
+#> plot_ly(z = means_matrix, x = colnames(means_matrix), y = rownames(means_matrix), type = "heatmap")
+#https://plot.ly/~mikhail.balyasin/26.embed

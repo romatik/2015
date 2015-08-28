@@ -24,3 +24,11 @@ qualitative_df <- bigtable %>%
 qualitative_df[19] <- NULL
 qualitative_df$A.1.Please.create.a.unique.identification.code.Just.type.in.birthday.in.the.format.DD.MO.YY.and.the.first.two.letters.of.first.name.followed.by.the.first.two.letters.of.first.name.and.first.two.letter.of.last.name.For.example.Maris.Miller.was.born.on.October.9.1975.So.her.code.would.be.091075MAMI._Open.Ended.Response <- NULL
 write.csv(x = qualitative_df, file = "../Media/2015/Master_tables/qualitative_team.csv")
+
+
+### For Patric
+bigtable$X <- NULL
+bigtable$B.2.2.a.If.you.feel.comfortable.describe.any.inappropriate.conduct.or.sexual.harassment.issues.you.have.witnessed.or.have.been.the.subject.of.and.the.support.you.have.received.The.answers.to.this.question.will.not.be.shared.with.Erasmus.Mundus.course._Open.Ended.Response <- NULL
+bigtable$B.2.2.Rate.the.support.received.on.the.following.issues._Inappropriate.conduct.or.sexual.harassment.issues <- NULL
+
+write.csv(x = bigtable, file = "../Media/2015/Master_tables/patrick.csv")
