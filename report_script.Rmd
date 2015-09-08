@@ -1,0 +1,78 @@
+---
+title: "Title of the report"
+author: "Course Quality Advisory Board"
+date: "September 2, 2015"
+output: html_document
+---
+
+```{r, echo = FALSE}
+suppressWarnings(suppressPackageStartupMessages(library(ggplot2)))
+suppressWarnings(suppressPackageStartupMessages(library(dplyr)))
+suppressWarnings(suppressPackageStartupMessages(library(likert)))
+suppressWarnings(suppressPackageStartupMessages(library(stringr)))
+suppressWarnings(suppressPackageStartupMessages(library(scales)))
+suppressWarnings(suppressPackageStartupMessages(library(psych)))
+suppressWarnings(suppressPackageStartupMessages(library(grid)))
+suppressWarnings(suppressPackageStartupMessages(library(RColorBrewer)))
+suppressWarnings(suppressPackageStartupMessages(library(xtable)))
+suppressWarnings(suppressPackageStartupMessages(library(tidyr)))
+
+library(knitr)
+library(markdown)
+library(rmarkdown)
+library(dplyr)
+library(likert)
+library(scales)
+library(psych)
+library(reshape)
+library(grid)
+library(RColorBrewer)
+library(xtable)
+library(tidyr)
+options(xtable.comment = FALSE)
+```
+
+#Introduction
+1. Something about us, what we do and things like that.
+2. General information about the number of respondents, may be some other information. 
+3. Structure of the document and some notations that are going to be used throughout.
+4. Executive summary (?)
+
+#Supporting services
+
+Some introductory text about supporting services.
+
+##Support received before the start of the Erasmus Mundus course
+Question `r as.character(questions[1])`
+
+```{r, warning=FALSE, echo=FALSE, results='asis', fig.height=3}
+questionprint(questions[1], dataset = course_dataset, save = FALSE)
+```
+
+Some supporting text explaining the graph and highlighting some of the issues.
+
+```{r, warning=FALSE, echo=FALSE, results='asis'}
+df <- comparative_df(questions[1])
+z <- xtable(df, caption = sprintf("Summary statistics for %s question", questions[1]), digits = c(0,0,2,2,2,2,2,2,2), type = "html")
+align(z) <- "|l|cc|c|lllll|"
+print(z, table.placement="h", floating = FALSE)
+```
+Comparative table to compare the course with all other courses numerically.
+
+```{r, warning=FALSE, echo=FALSE, results='asis', fig.height=6}
+means <- means_prepare(questions[1])[[1]]
+vector <- means_prepare(questions[1])[[2]]
+  
+heatmap_printing(means, vector, scaled = FALSE, save = FALSE)
+
+```
+
+Heatmap showing the relative place of the course among all other EM courses on that question (not scaled)
+
+```{r, warning=FALSE, echo=FALSE, results='asis', fig.height=6}
+heatmap_printing(means, vector, scaled = TRUE, save = FALSE)
+
+```
+
+Heatmap showing the relative place of the course among all other EM courses on that question (scaled)
+

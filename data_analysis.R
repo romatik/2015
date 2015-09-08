@@ -5,6 +5,9 @@ library(psych)
 library(reshape)
 library(grid)
 library(RColorBrewer)
+library(tidyr)
+
+source("functions.R")
 
 dataset <- read.csv("../Media/2015/Master_tables/bigtable.csv", na.strings = c("", " ", "No answer", "N/A", "NA"), header = TRUE)
 dataset$X <- NULL
@@ -37,7 +40,7 @@ colnames(tenormore) <- c("Course", "Respondents")
 overall <- select(dataset,
                   RespondentID_,
                   starts_with("A."),
-                  starts_with("X."),
+                  starts_with(questions),
                   starts_with("B."),
                   starts_with("C."),
                   starts_with("L."),
@@ -47,86 +50,12 @@ overall <- select(dataset,
                   starts_with("Q"),
                   I.am.currently._Response)
 
-
-### function for printing out the likert plot about each individual section of a survey. It also prints out information about 
-### Cronbach's alpha level. Can be used further to create similar plots for each individual course.
-
-printing_alpha <- function(x, question){
-  if (sum(complete.cases(question)) > 0){ # calculating Cronbach's alpha only for cases where complete cases exist
-    question_alpha <- psych::alpha(data.matrix(question))
-    question_alpha_head <- xtable(question_alpha$total, caption = sprintf("Statistics for %s question", x))
-    print.xtable(question_alpha_head, type = "html", file = sprintf("./Question_statistics/%s_alpha.html", x))
-    question_alpha_drop <- xtable(question_alpha$alpha.drop, caption = sprintf("What if each individual dimension is dropped for %s question", x))
-    print.xtable(question_alpha_drop, type = "html", file = sprintf("./Question_statistics/%s_drop.html", x))
-    question_alpha_stats <- xtable(question_alpha$item.stats, caption = sprintf("Summary statistics for %s question", x))
-    print.xtable(question_alpha_stats, type = "html", file = sprintf("./Question_statistics/%s_stats.html", x))
-  }
-}
-
-
-### x = name of the question to be printed
-### dataset = which dataset should be used to extract data from. Default = overall.
-questionprint <- function(x, dataset = overall){
-  question <- dataset[, substr(names(dataset), 1, nchar(x)) == x]
-  colnames(question) <- gsub("\\.", " ", colnames(question)) #making names of questions readable
-  name_of_the_question <- gsub("(.*)_(.*)", "\\1", colnames(question)[1]) #storing the name of the section for title of the plot
-  name_of_the_question <- substring(name_of_the_question, nchar(x)+1)
-  colnames(question) <- gsub("(.*?)_(.*)", "\\2", colnames(question)) #leaving just the dimension name
-  
-  levels = likert_levels # default is likert_levels
-  if (x == "L.6" || x == "L.5" || x == "L.4")
-    levels = agree_levels # using agree levels only for relevant questions
-  
-  ### making sure that levels go in order they were meant to go
-  for(i in seq_along(question)) {
-    ### this step will also reduce all other answers to NA's
-    question[,i] <- factor(question[,i], levels = levels)
-  }
-  
-  ### checking to see to have more than 10 answers in each column, otherwise delete it
-  question <- question[, colSums(!is.na(question)) > 10]
-
-  ### checking to see if question has more than 1 dimension with 10 or more respondents to proceed. 
-  ### Otherwise it doesn't make sense to calculate Cronbach's alpha and plot
-  if (!is.null(dim(question)[2])){
-    if (dim(question)[2] > 1) {
-    
-      ### calculating Cronbach's alpha. If there is an error it won't print out anything
-      try(printing_alpha(x, question))
-      
-      ### creating likert-type variable to print it out
-      questionl <- likert(question) #creating likert-type variable for plotting
-      wrap_function <- wrap_format(120) #wrap-function to print question correctly
-      name_of_the_question <- wrap_function(name_of_the_question)
-    
-      
-      ### printing out the file
-      p <- plot(questionl, 
-                plot.percents = TRUE, # displaying percents for each answer
-                plot.percent.low = FALSE,  # displaying cummulative percents for negative answers
-                plot.percent.high = FALSE, # displaying cummulative percents for positive answers
-                centered = FALSE, # stretcthing the bar from left to right
-                text.size = 1.5, 
-                wrap = 50, # wrap statement for dimension names
-                legend.position = "top") + 
-        ggtitle(name_of_the_question) + # title of the question
-        theme(text = element_text(size = 7), # setting the text size of the plot
-              plot.margin = unit(c(0, 0.8, 0.3, 0), "lines"), # decreasing white space around the plot
-              legend.margin = unit(0, "lines"), # deleting space around legend
-              legend.key.size = unit(0.5, "lines"), # decreasing size of legend elements
-              legend.background = element_rect(colour = "gray", fill = NA, size = 0.1)) + # adding a frame around the legend
-        geom_hline(yintercept=seq(25, 75, by=25), linetype = "dashed", size = 0.2) + # adding dashed lines at 25, 50, 75% to make it more clear
-        coord_flip(ylim = c(-1,101)) #reducing white space left to 0 and right to 100
-      ggsave(filename = sprintf("./Question_statistics/%s.png", x), plot = p, units = "mm", width = 180, height = (25 + dim(question)[2]*8)) #making graph a little rubbery
-    }
-  }
-}
-
+#########################################################################################################################################
 ### creating summary plots for every question in the dataset
 for (i  in seq_along(questions))
   questionprint(questions[i])
 
-
+#########################################################################################################################################
 ### creating summary plots for every course and every question in the dataset
 mainDir <- "C:/Users/Misha/Dropbox/Projects/EM Internship/Quantitative team/2015/Course_statistics"
 for (i in seq_along(tenormore$Course)){
@@ -148,71 +77,22 @@ for (i in seq_along(tenormore$Course)){
     questionprint(questions[i], dataset = course_dataset)
 }
 
-
-overall <- overall[(overall$A.2.Select.the.name.of.Erasmus.Mundus.master.course._Response. %in% tenormore$Course),]
-
+#########################################################################################################################################
 ### creating heatmaps for means of every question and every course
 setwd("C:/Users/Misha/Dropbox/Projects/EM Internship/Quantitative team/2015")
 
-# http://stackoverflow.com/questions/32136304/conditional-calculation-of-mean
-# function calculates the mean only if there are 10 or more respondents to each individual question
-f1 <- function(x) if(sum(!is.na(x))>9) mean(as.numeric(x), na.rm=TRUE) else NA_real_
-
-### different colors depending on scaled/not scaled
-#mycolors <- brewer.pal(length(seq(1,4, by = 0.5)), "BrBG)
-mycolors <- brewer.pal(length(c(-Inf,-2:2,Inf)), "BrBG")
+scaled <- FALSE
 
 for (i in seq_along(questions)){
-  #calculating means for the given question
-  means <- overall %>%
-    select(A.2.Select.the.name.of.Erasmus.Mundus.master.course._Response.,
-           starts_with(questions[i])) %>%
-    group_by(A.2.Select.the.name.of.Erasmus.Mundus.master.course._Response.) %>%
-    summarise_each(funs(f1))
+  means <- means_prepare(questions[i])[[1]]
+  vector <- means_prepare(questions[i])[[2]]
   
-  #storing the names of the courses for future use
-  rownames_store <- means$A.2.Select.the.name.of.Erasmus.Mundus.master.course._Response.
-  means$A.2.Select.the.name.of.Erasmus.Mundus.master.course._Response. <- NULL
-  
-  #logical vector to find out rows with all NA's
-  vector <- !!rowSums(!is.na(means)) 
-  
-  means <- means[vector,] #deleting the rows with all NA's
-  rownames(means) <- rownames_store[vector] #writing down the names of the courses
-  colnames(means) <- gsub("\\.", " ", colnames(means)) #making names of questions readable
-  colnames(means) <- gsub("(.*?)_(.*)", "\\2", colnames(means)) #leaving just the dimension name
-  wrap_function_x <- wrap_format(35)
-  colnames(means) <- wrap_function_x(colnames(means))
-  wrap_function_y <- wrap_format(50)
-  rownames(means) <- wrap_function_y(rownames(means))
-  
-  #creating the matrix for printing it out in ggplot
-### scaling/not scaling
-#  means_matrix <- data.matrix(means)        
-  means_matrix <- scale(data.matrix(means))
-  means_matrix_melted <- melt(means_matrix)
-  
-  
-### different ways to cut values depending if scaled/not scaled
-#  means_matrix_melted$value1 <- cut(means_matrix_melted$value, seq(1,4, by = 0.5), right = FALSE)
-  means_matrix_melted$value1 <- cut(means_matrix_melted$value, c(-Inf,-2:2,Inf), right = FALSE) 
-
-  
-  #plotting the heatmap
-  p <- ggplot(means_matrix_melted, aes(x = X2, y = X1)) + 
-        ggtitle(as.character(questions[i])) +
-        geom_tile(aes(fill = value1)) + 
-        scale_fill_manual(name = levels(means_matrix_melted$value1), 
-                          values = mycolors,
-                          na.value = "black",
-                          drop = FALSE) + # not dropping levels with 0 
-        theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),          
-          axis.title.x=element_blank(),
-          axis.title.y=element_blank()) 
-  
-#  ggsave(filename = sprintf("./Heatmaps/%s.png", questions[i]), plot = p, units = "mm", width = 250, height = (70 + sum(vector)*4))
-  ggsave(filename = sprintf("./Heatmaps_scaled/%s.png", questions[i]), plot = p, units = "mm", width = 250, height = (70 + sum(vector)*4))
+  heatmap_printing(means, vector, scaled = scaled)
 }
 
-#> plot_ly(z = means_matrix, x = colnames(means_matrix), y = rownames(means_matrix), type = "heatmap")
-#https://plot.ly/~mikhail.balyasin/26.embed
+# plot_ly(z = means_matrix, x = colnames(means_matrix), y = rownames(means_matrix), type = "heatmap")
+# https://plot.ly/~mikhail.balyasin/26.embed
+
+#########################################################################################################################################
+### example of printing with a grouping
+questionprint_grouping("B.1.1", grouping = overall$A.9.Gender._Response, grouping_levels = c("Male", "Female"))

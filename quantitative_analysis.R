@@ -39,15 +39,18 @@ z <- data.matrix(z)
 
 z[,36] <- factor(z[,36])
 
+#########################################################################################################################################
 #PCA
 fa.parallel(z, fa = "pc", n.iter = 100, show.legend = FALSE)
 pc <- principal(z, nfactors = 4)
 
+#########################################################################################################################################
 #LFA
 covariances <- cov(z)
 correlations <- cov2cor(covariances)
 fa <- fa(correlations, nfactors = 10, rotate = "none", fm = "pa")
 
+#########################################################################################################################################
 library(MASS)
 library(caTools)
 #LDA
@@ -57,6 +60,45 @@ test <- z[!spl,]
 lda.fit <- lda(C.4.Please.rate.overall.satisfaction.with.EM.course._ ~ ., data = train)
 lda.class <- predict(lda.fit, test$C.4.Please.rate.overall.satisfaction.with.EM.course._)$class
 
-
+#########################################################################################################################################
 #kmeans
 kmeans_z <- kmeans(z, 5)
+
+
+#########################################################################################################################################
+f1 <- function(x) if(sum(!is.na(x))>9) mean(as.numeric(x), na.rm=TRUE) else NA_real_
+
+### different colors depending on scaled/not scaled
+#mycolors <- brewer.pal(length(seq(1,4, by = 0.5)), "BrBG)
+mycolors <- brewer.pal(length(c(-Inf,-2:2,Inf)), "BrBG")
+
+means <- overall %>%
+  select(A.2.Select.the.name.of.Erasmus.Mundus.master.course._Response.,
+         starts_with(questions[1])) %>%
+  group_by(A.2.Select.the.name.of.Erasmus.Mundus.master.course._Response.) %>%
+  summarise_each(funs(f1))
+
+#storing the names of the courses for future use
+rownames_store <- means$A.2.Select.the.name.of.Erasmus.Mundus.master.course._Response.
+means$A.2.Select.the.name.of.Erasmus.Mundus.master.course._Response. <- NULL
+
+#logical vector to find out rows with all NA's
+vector <- !!rowSums(!is.na(means)) 
+
+means <- means[vector,] #deleting the rows with all NA's
+rownames(means) <- rownames_store[vector] #writing down the names of the courses
+colnames(means) <- gsub("\\.", " ", colnames(means)) #making names of questions readable
+colnames(means) <- gsub("(.*?)_(.*)", "\\2", colnames(means)) #leaving just the dimension name
+wrap_function_x <- wrap_format(35)
+colnames(means) <- wrap_function_x(colnames(means))
+wrap_function_y <- wrap_format(50)
+rownames(means) <- wrap_function_y(rownames(means))
+
+#means_matrix <- data.matrix(means)        
+means_matrix <- scale(data.matrix(means))
+
+library(blockcluster)
+means_matrix <- means_matrix[complete.cases(means_matrix),]
+out <- cocluster(means_matrix, datatype = "continuous", nbcocluster = c(4,2))
+plot(out)
+summary(out)
