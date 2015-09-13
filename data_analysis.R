@@ -7,8 +7,8 @@ library(grid)
 library(RColorBrewer)
 library(tidyr)
 
+setwd("C:/Users/Misha/Dropbox/Projects/EM Internship/Quantitative team/2015")
 source("functions.R")
-
 dataset <- read.csv("../Media/2015/Master_tables/bigtable.csv", na.strings = c("", " ", "No answer", "N/A", "NA"), header = TRUE)
 dataset$X <- NULL
 dataset$B.2.2.Rate.the.support.received.on.the.following.issues._Inappropriate.conduct.or.sexual.harassment.issues <- NULL
@@ -40,7 +40,7 @@ colnames(tenormore) <- c("Course", "Respondents")
 overall <- select(dataset,
                   RespondentID_,
                   starts_with("A."),
-                  starts_with(questions),
+                  starts_with("X."),
                   starts_with("B."),
                   starts_with("C."),
                   starts_with("L."),

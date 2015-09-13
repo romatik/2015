@@ -52,7 +52,7 @@ questionprint(questions[1], dataset = course_dataset, save = FALSE)
 Some supporting text explaining the graph and highlighting some of the issues.
 
 ```{r, warning=FALSE, echo=FALSE, results='asis'}
-df <- comparative_df(questions[1])
+df <- comparative_df(questions[1], course_dataset)
 z <- xtable(df, caption = sprintf("Summary statistics for %s question", questions[1]), digits = c(0,0,2,2,2,2,2,2,2), type = "html")
 align(z) <- "|l|cc|c|lllll|"
 print(z, table.placement="h", floating = FALSE)

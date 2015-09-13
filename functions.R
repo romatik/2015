@@ -25,7 +25,7 @@ questionprint <- function(x, dataset = overall, save = TRUE){
       
       ### creating likert-type variable to print it out
       questionl <- likert(question) #creating likert-type variable for plotting
-      wrap_function <- wrap_format(100) #wrap-function to print question correctly
+      wrap_function <- wrap_format(60) #wrap-function to print question correctly
       name_of_the_question <- wrap_function(name_of_the_question)
       
       
@@ -35,16 +35,17 @@ questionprint <- function(x, dataset = overall, save = TRUE){
                 plot.percent.low = FALSE,  # displaying cummulative percents for negative answers
                 plot.percent.high = FALSE, # displaying cummulative percents for positive answers
                 centered = FALSE, # stretcthing the bar from left to right
-                text.size = 2, 
+                text.size = 2,
                 wrap = 50, # wrap statement for dimension names
                 legend.position = "top") + 
         ggtitle(name_of_the_question) + # title of the question
-        theme(text = element_text(size = 10), # setting the text size of the plot
+        theme(text = element_text(size = 7, family = "Cambria"), # setting the text size of the plot
               plot.margin = unit(c(0, 0.8, 0.3, 0), "lines"), # decreasing white space around the plot
               legend.margin = unit(0, "lines"), # deleting space around legend
               legend.key.size = unit(0.5, "lines"), # decreasing size of legend elements
-              legend.background = element_rect(colour = "gray", fill = NA, size = 0.1)) + # adding a frame around the legend
+              legend.background = element_rect(colour = "gray", fill = NA, size = 0.1)) +# adding a frame around the legend
         geom_hline(yintercept=seq(25, 75, by=25), linetype = "dashed", size = 0.2) + # adding dashed lines at 25, 50, 75% to make it more clear
+        coord_fixed() +
         coord_flip(ylim = c(-1,101)) #reducing white space left to 0 and right to 100
       if(save){
         ggsave(filename = sprintf("./Question_statistics/%s.png", x), plot = p, units = "mm", width = 180, height = (25 + dim(question)[2]*8)) #making graph a little rubbery
@@ -140,7 +141,7 @@ printing_alpha <- function(x, question_dataset, saved = TRUE){
 }
 
 
-comparative_df <- function(x){
+comparative_df <- function(x, course_dataset){
   ### function to create a dataframe to compare course with all other courses on a given question. Takes in a question and returns a data frame
   ### with summary statistics for both a course and overall for all courses.
   

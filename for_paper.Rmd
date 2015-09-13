@@ -1,0 +1,140 @@
+---
+title: "Untitled"
+author: "Mikhail Balyasin"
+date: "September 10, 2015"
+output: word_document
+---
+```{r, echo = FALSE}
+suppressWarnings(suppressPackageStartupMessages(library(ggplot2)))
+suppressWarnings(suppressPackageStartupMessages(library(dplyr)))
+suppressWarnings(suppressPackageStartupMessages(library(likert)))
+suppressWarnings(suppressPackageStartupMessages(library(stringr)))
+suppressWarnings(suppressPackageStartupMessages(library(scales)))
+suppressWarnings(suppressPackageStartupMessages(library(psych)))
+suppressWarnings(suppressPackageStartupMessages(library(grid)))
+suppressWarnings(suppressPackageStartupMessages(library(RColorBrewer)))
+suppressWarnings(suppressPackageStartupMessages(library(xtable)))
+suppressWarnings(suppressPackageStartupMessages(library(tidyr)))
+suppressWarnings(suppressPackageStartupMessages(library(reshape)))
+
+library(knitr)
+library(markdown)
+library(rmarkdown)
+library(dplyr)
+library(likert)
+library(scales)
+library(psych)
+library(reshape)
+library(grid)
+library(RColorBrewer)
+library(xtable)
+library(tidyr)
+options(xtable.comment = FALSE)
+opts_chunk$set(dev="png", 
+               dev.args=list(type="cairo"),
+               dpi=200)
+
+setwd("C:/Users/Misha/Dropbox/Projects/EM Internship/Quantitative team/2015")
+source("./functions.R")
+dataset <- read.csv("../Media/2015/Master_tables/bigtable.csv", na.strings = c("", " ", "No answer", "N/A", "NA"), header = TRUE)
+dataset$X <- NULL
+dataset$B.2.2.Rate.the.support.received.on.the.following.issues._Inappropriate.conduct.or.sexual.harassment.issues <- NULL
+dataset$B.2.2.a.If.you.feel.comfortable.describe.any.inappropriate.conduct.or.sexual.harassment.issues.you.have.witnessed.or.have.been.the.subject.of.and.the.support.you.have.received.The.answers.to.this.question.will.not.be.shared.with.Erasmus.Mundus.course._Open.Ended.Response <- NULL
+
+### ordered levels that were used in the survey
+likert_levels <- c("Very unsatisfied", "Somewhat unsatisfied", "Somewhat satisfied", "Very satisfied")
+agree_levels <- c("Disagree", "Somewhat disagree", "Somewhat agree", "Agree")
+
+### questions that need to be printed out
+questions <- c('B.1.1', 'B.1.3', 'B.2.1', 'B.2.2', 'C.1', #overall program satisfaction
+               "L.4", "L.5", "L.6", 'L.3.a', 'L.2.a', #internship/field experience
+               "N.1.1", "N.1.3", "N.2.1", "N.2.2", "N.3.1", "N.4.1", #satisfaction in first university
+               "O.1.1", "O.1.3", "O.2.1", "O.2.2", "O.3.1", "O.4.1", #satisfaction in second university
+               "P.1.1", "P.1.3", "P.2.1", "P.2.2", "P.3.1", "P.4.1", #satisfaction in third university
+               "Q.1.1", "Q.1.3", "Q.2.1", "Q.2.2", "Q.3.1", "Q.4.1") #satisfaction in fourth university
+
+### finding out courses with 10 or more respondents in the dataset
+tenormore <- dataset %>%
+  select(A.2.Select.the.name.of.Erasmus.Mundus.master.course._Response.) %>%
+  group_by(A.2.Select.the.name.of.Erasmus.Mundus.master.course._Response.) %>%
+  summarise(respondents = n()) %>%
+  filter(respondents > 10)
+colnames(tenormore) <- c("Course", "Respondents")
+  
+### taking only those entries further for analysis
+#dataset <- dataset[(dataset$A.2.Select.the.name.of.Erasmus.Mundus.master.course._Response. %in% tenormore$Course),]
+
+overall <- select(dataset,
+                  RespondentID_,
+                  starts_with("A."),
+                  starts_with("X."),
+                  starts_with("B."),
+                  starts_with("C."),
+                  starts_with("L."),
+                  starts_with("N"),
+                  starts_with("O"),
+                  starts_with("P"),
+                  starts_with("Q"),
+                  I.am.currently._Response)
+```
+
+
+#Results
+##Overall coverage
+Survey has been opened for 7 weeks from 1st of June, 2015 until 20th of July, 2015. Over that time there were 2139 completely filled-in surveys. 8 surveys were excluded from further analysis since they were filled in twice by the same people. Therefore, only the later filled in survey has been kept for future analysis.
+
+Surveys were filled-in by representatives of `r length(unique(dataset$A.2.Select.the.name.of.Erasmus.Mundus.master.course._Response.))` courses from `r length(unique(dataset$A.7.What.is.nationality.please.choose.one.only._Response))` countries. `r length(unique(tenormore$Course))` courses had 10 or more respondents. There were 977 females (46%) and 1135 males (54%) among survey respondents. EM scholarship for their studies was awarded to 1674 (79%) students, 457 (21%) respondents do not receive scholarship.
+
+```{r, echo = FALSE, message = FALSE, warning=FALSE, fig.height=3}
+qplot(dataset$A.8.Age._Response, xlab = "Age")+ggtitle("Distribution of ages") + theme_bw(base_size = 12, base_family = "Cambria")
+```
+
+Surveys from 1600 (75%) respondents are from students who started their Erasmus Mundus program in 2012-2014 study years. Response rate for those years is around 35% from total number of students enrolled in EM programs. This means that survey managed to achieve good coverage and is likely free of distribution and completion biases. 
+
+Response rate for the most recent years has been similar with the last year CQSS survey, but there is a noticeable drop for students who enrolled in earlier years. For example, last year survey managed to gather 471 responses from students enrolled in 2010, yet this edition of a survey managed to obtain only 112 responses from the same students. Such drop is not surprising since we would expect current students to be much more willing to spend their time to fill-in the survey about the program. 
+
+##Validity and reliability
+Issues of validity and reliability are especially important in online survey since researchers have very little control over how respondents enter data and if they are diligent in doing so. There are couple of indirect measures that help ensure us that data we collected is valid and reliable. 
+
+First of all, as a part of filling in survey SurveyMonkey asks respondents to put in unique identifier for each respondents. This step is voluntary, but it helps ensure that surveys were filled in by unique students. Analysis of identifiers show that 2124 students entered unique identifiers with only 7 students copying the identifier that is used as an example in SurveyMonkey. Further analysis of demographic characteristic (age, sex, nationality etc.) showed that, indeed, those surveys were also filled in by unique students.
+
+Another way to gauge whether students actually paid attention to questions asked in a survey is how long they've spent on the survey. Pilot testing of a survey showed that it takes around 20-25 minutes to fill it in mindfully (this time has been stated in an introductory text of a survey). Median time to complete a survey is 26.7 minutes. That shows that students, on average, did spend enough time on a survey.
+
+Coverage through auxilary survey for administrators.
+
+##How those results can be used
+Results of the survey can be used in multiple complementary ways. 
+
+First of all, survey reports for courses with 10 or more responses will be distributed to course administrators and student representatives. Based on the feedback from previous years, reports will emphasize the comparative measures by providing distribution of means for all courses with 10 or more responses. Such distribution makes it easy for stakeholders to evaluate the place of the program compared to other programs in Erasmus Mundus umbrella. 
+
+```{r, results = "asis",echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
+course_dataset <- dataset[dataset$A.2.Select.the.name.of.Erasmus.Mundus.master.course._Response. == tenormore$Course[42],] 
+df <- comparative_df(questions[1], course_dataset)
+z <- xtable(df, caption = sprintf("Summary statistics for %s question", questions[1]), digits = c(0,0,2,2,2,2,2,2,2), type = "html")
+align(z) <- "|l|cc|c|lllll|"
+print(z, table.placement="h", floating = FALSE)
+print.xtable(z, type = "html", file = "table_for_paper.html")
+
+```
+
+Second of all, results of a survey will be further distributed via interactive tools to everyone interested to learn more about quality issues in Erasmus Mundus Master programs. Such effort ensures transparency of results.
+
+Finally, reports can be used internally since they provide information about each individual university in the consortia. This information can be used to influence change in certain aspects of any given university. On top of that, those changes will have a backing of data behind them. This means that efforts of administrators can be as targeted as possible thus ensuring effective and efficient decision-making. Two figures below illustrate such approach by providing information on two universities in the same consortia and on the same set of services. Similar easy-to-parse information is provided on every question of a survey.
+
+```{r, fig.height=2.5, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
+questionprint(questions[19], dataset = course_dataset, save = FALSE)
+```
+```{r, fig.height=2, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
+questionprint(questions[25], dataset = course_dataset, save = FALSE)
+```
+
+##Uniqueness of data
+CQSS follows rich tradition of measuring student satisfaction. Studies into that aspect are wide-spread since student satisfaction is an important measure of overall quality of the course. At the same time, the CQSS survey is unique in many ways.
+
+First of all, it is the only survey to measure student satisfaction of Erasmus Mundus Master Programs. Collected information can easily be used to identify problematic areas in any given program as well as in overall Erasmus Mundus Program. It is much more difficult to sweep problems under the rug if, through relatively robust measures, program scores are the lowest among any other program in EM. Without a survey such as CQSS administrators might have been unaware just how severe some of the problems in the program are.
+
+Nevertheless, it should be noted, that each EM program is unique in many ways. Therefore, it is quite difficult to capture that uniqueness through standardized survey. For that reason, CQSS results should be used with caution and with cross-validation from other channels (e.g., financial reports, interviews, focus-groups and so on).
+
+Third of all, CQSS deliberately is not used to produce any sort of ranking table for courses. This is relatively uncommon since ratings became a go-to tool to compare, for example, universities between each other. Yet, the philosophy of the team adopted for this survey respects complexity and pecularities of any given program and defers decision-making to stakeholders of EM programs. The role that we see for ourselves concentrates around providing as much descriptive data as possible.
+
+Finally, information about student satisfaction comes from the same students who have a chance to compare and contrast the quality of the program in each university. This makes their reports even more interesting since it is impossible to claim that those results are a fluke since, in a way, each EM program makes a natural experiment.
