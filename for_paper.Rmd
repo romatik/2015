@@ -2,7 +2,7 @@
 title: "Untitled"
 author: "Mikhail Balyasin"
 date: "September 10, 2015"
-output: word_document
+output: html_document
 ---
 ```{r, echo = FALSE}
 suppressWarnings(suppressPackageStartupMessages(library(ggplot2)))
