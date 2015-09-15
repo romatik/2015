@@ -21,7 +21,7 @@ questionprint <- function(x, dataset = overall, save = TRUE){
     if (dim(question)[2] > 1) {
       
       ### calculating Cronbach's alpha. If there is an error it won't print out anything
-      try(printing_alpha(x, question))
+      #try(printing_alpha(x, question))
       
       ### creating likert-type variable to print it out
       questionl <- likert(question) #creating likert-type variable for plotting
@@ -492,7 +492,8 @@ report_question <- function(question, course_dataset){
   try_flag <- tryCatch(comparative_df(question, course_dataset), error = function(err) return(TRUE)) 
   
   if(!is.logical(try_flag)){ #checking if try_flag is logical. If it is, then do nothing. Otherwise print out the information about the question.
-    cat(first_heading)
+    temp <- sprintf("%s%s%s\n", first_heading, "Question:", question)
+    cat(temp)
     cat(intro_text)
     questionprint(question, dataset = course_dataset, save = FALSE)
     cat(graph_text)
