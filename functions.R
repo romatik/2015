@@ -487,16 +487,21 @@ report_question <- function(question, course_dataset){
          }
   )
   
-
-  cat(first_heading)
-  cat(intro_text)
-  questionprint(question, dataset = course_dataset, save = FALSE)
-  cat(graph_text)
+  #logical flag to see if there is any data on a given question.
+  #It will evaluate to TRUE if there is any error or will return the value otherwise.
+  try_flag <- tryCatch(comparative_df(question, course_dataset), error = function(err) return(TRUE)) 
   
-  df <- comparative_df(question, course_dataset)
-  z <- xtable(df, caption = sprintf("Summary statistics for %s question", question), digits = c(0,0,2,2,2,2,2,2,2), type = "html")
-  align(z) <- "|p{5.5cm}|cc|c|lllll|"
-  print(z, table.placement="h", floating = FALSE)
-  
-  cat(table_text)
+  if(!is.logical(try_flag)){ #checking if try_flag is logical. If it is, then do nothing. Otherwise print out the information about the question.
+    cat(first_heading)
+    cat(intro_text)
+    questionprint(question, dataset = course_dataset, save = FALSE)
+    cat(graph_text)
+    
+    df <- comparative_df(question, course_dataset)
+    z <- xtable(df, caption = sprintf("Summary statistics for %s question", question), digits = c(0,0,2,2,2,2,2,2,2), type = "html")
+    align(z) <- "|p{5.5cm}|cc|c|lllll|"
+    print(z, table.placement="h", floating = FALSE, NA.string = "NA")
+    
+    cat(table_text)
+  }
 }
