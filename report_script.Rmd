@@ -33,46 +33,79 @@ options(xtable.comment = FALSE)
 ```
 
 #Introduction
-1. Something about us, what we do and things like that.
-2. General information about the number of respondents, may be some other information. 
-3. Structure of the document and some notations that are going to be used throughout.
-4. Executive summary (?)
+##Course Quality Advisory Board
+C-QAB is a voluntary student organization comprised of current and past Erasmus Mundus students. The focus of C-QAB is to facilitate communication between the Association and the Erasmus Mundus programmes. C-QAB accomplishes this by coordinating the EMA Programme Representatives, conducting an annual student services satisfaction survey and responding to student concerns through its email account. 
 
-#Supporting services
+If you have any concerns or would like to request some additional information, feel free to contact us through e-mail: em.feedback@em-a.eu.
 
-Some introductory text about supporting services.
+##Some stuff about the survey
+Number of respondents, number of courses with 10+ respondents, tables with coverage and response rates.
 
-##Support received before the start of the Erasmus Mundus course
-Question `r as.character(questions[1])`
+##Structure of the document
 
-```{r, warning=FALSE, echo=FALSE, results='asis', fig.height=3}
-questionprint(questions[1], dataset = course_dataset, save = FALSE)
-```
+This report is structured similar to a survey itself. There are four sections each represented by multiple questions. Each individual question is explained through a graph and a table. 
 
-Some supporting text explaining the graph and highlighting some of the issues.
+Graph plots the responses from students, while table provides information about how other courses did on that question. Example of a table below:
 
 ```{r, warning=FALSE, echo=FALSE, results='asis'}
 df <- comparative_df(questions[1], course_dataset)
 z <- xtable(df, caption = sprintf("Summary statistics for %s question", questions[1]), digits = c(0,0,2,2,2,2,2,2,2), type = "html")
-align(z) <- "|l|cc|c|lllll|"
+align(z) <- "|p{5.5cm}|cc|c|lllll|"
 print(z, table.placement="h", floating = FALSE)
 ```
-Comparative table to compare the course with all other courses numerically.
 
-```{r, warning=FALSE, echo=FALSE, results='asis', fig.height=6}
-means <- means_prepare(questions[1])[[1]]
-vector <- means_prepare(questions[1])[[2]]
-  
-heatmap_printing(means, vector, scaled = FALSE, save = FALSE)
+Each row represents a dimension of the question. It contains information about the mean that question received from students of your program. Following that is the mean for all respondents of the survey. Finally, table provides information about distribution of means in all other courses. Distribution is represented by quantiles. This means that 25% of courses will lie between two adjacent columns (e.g., 0%-25%). This enables easy comparison of any given program with its peers.
 
+Important note: Throughout this report only dimensions with at least 10 respondents will be used. That means that for some dimensions, instead of a mean, there will be a special value NA (not available). We still keep the comparative information for that dimension for reference.
+
+## Executive summary (?)
+
+#Supporting services
+
+```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
+report_question("B.1.1", course_dataset)
 ```
 
-Heatmap showing the relative place of the course among all other EM courses on that question (not scaled)
-
-```{r, warning=FALSE, echo=FALSE, results='asis', fig.height=6}
-heatmap_printing(means, vector, scaled = TRUE, save = FALSE)
-
+```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
+report_question("B.1.3", course_dataset)
 ```
 
-Heatmap showing the relative place of the course among all other EM courses on that question (scaled)
+```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
+report_question("B.2.1", course_dataset)
+```
 
+```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
+report_question("B.2.2", course_dataset)
+```
+
+#Assessment and feedback
+Some introductory text about the section
+
+```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
+report_question("C.1", course_dataset)
+```
+
+
+#Thesis supervision and personal development
+Some introductory text about the section
+
+#Internship/field experience
+Some introductory text about the section
+
+#Information about specific universities
+Some introductory text about the section
+
+##First university
+Table with universities that were "first"
+
+##Second university
+Table with universities that were "second"
+
+##Third university
+Table with universities that were "third"
+
+##Fourth university
+Table with universities that were "fourth"
+
+#Concluding remarks
+Some concluding remarks

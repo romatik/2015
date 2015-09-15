@@ -36,10 +36,10 @@ questionprint <- function(x, dataset = overall, save = TRUE){
                 plot.percent.high = FALSE, # displaying cummulative percents for positive answers
                 centered = FALSE, # stretcthing the bar from left to right
                 text.size = 2,
-                wrap = 50, # wrap statement for dimension names
+                wrap = 40, # wrap statement for dimension names
                 legend.position = "top") + 
         ggtitle(name_of_the_question) + # title of the question
-        theme(text = element_text(size = 7, family = "Cambria"), # setting the text size of the plot
+        theme(text = element_text(size = 10, family = "Source Sans Pro"), # setting the text size of the plot
               plot.margin = unit(c(0, 0.8, 0.3, 0), "lines"), # decreasing white space around the plot
               legend.margin = unit(0, "lines"), # deleting space around legend
               legend.key.size = unit(0.5, "lines"), # decreasing size of legend elements
@@ -214,10 +214,10 @@ means_prepare <- function(x){
   rownames(means) <- rownames_store[vector] #writing down the names of the courses
   colnames(means) <- gsub("\\.", " ", colnames(means)) #making names of questions readable
   colnames(means) <- gsub("(.*?)_(.*)", "\\2", colnames(means)) #leaving just the dimension name
-  wrap_function_x <- wrap_format(35)
-  colnames(means) <- wrap_function_x(colnames(means))
-  wrap_function_y <- wrap_format(50)
-  rownames(means) <- wrap_function_y(rownames(means))
+#   wrap_function_x <- wrap_format(35)
+#   colnames(means) <- wrap_function_x(colnames(means))
+#   wrap_function_y <- wrap_format(50)
+#   rownames(means) <- wrap_function_y(rownames(means))
   
   return(list(means, vector))
 }
@@ -272,4 +272,231 @@ heatmap_printing <- function(means, vector, scaled = TRUE, saved = TRUE){
       ggsave(filename = sprintf("./Heatmaps/%s.png", questions[i]), plot = p, units = "mm", width = 250, height = (70 + sum(vector)*4))
     }
   } else {print(p)}
+}
+
+report_question <- function(question, course_dataset){
+  ## Function to print out the question in the individual report.
+  
+  ## question = string, containing the question to be printed.
+  ## course_dataset = course dataset to produce graphs and tables.
+  
+  switch(question,
+         B.1.1 = {
+           first_heading <- '##Support received before the start of the Erasmus Mundus course\n'
+           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
+           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
+           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
+         },
+         B.1.3 = {
+           first_heading <- '##Support received during the orientaion program.\n'
+           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
+           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
+           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
+         },
+         B.2.1 = {
+           first_heading <- '##Helpfulness of units and people\n'
+           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
+           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
+           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
+         },
+         B.2.2 = {
+           first_heading <- '##Support received on various issues.\n'
+           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
+           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
+           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
+         },
+         C.1 = {
+           first_heading <- '##Module assessment.\n'
+           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
+           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
+           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
+         },
+         L.2.a = {
+           first_heading <- '##Internship experience.\n'
+           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
+           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
+           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
+         },
+         L.3.a = {
+           first_heading <- '##Field experience.\n'
+           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
+           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
+           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
+         },
+         L.4 = {
+           first_heading <- '##First supervisor.\n'
+           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
+           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
+           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
+         },
+         L.5 = {
+           first_heading <- '##Second supervisor.\n'
+           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
+           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
+           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
+         },
+         L.6 = {
+           first_heading <- '##Personal development.\n'
+           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
+           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
+           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
+         },
+         N.1.1 = {
+           first_heading <- '###Support before the beginning of studies.\n'
+           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
+           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
+           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
+         },
+         N.1.3 = {
+           first_heading <- '###Orientation program.\n'
+           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
+           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
+           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
+         },
+         N.2.1 = {
+           first_heading <- '###Helpfulness of units/people.\n'
+           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
+           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
+           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
+         },
+         N.2.2 = {
+           first_heading <- '###Extracurricular activities\n'
+           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
+           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
+           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
+         },
+         N.3.1 = {
+           first_heading <- '###Assessment and feedback channels.\n'
+           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
+           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
+           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
+         },
+         N.4.1 = {
+           first_heading <- '###Teaching and learning.\n'
+           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
+           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
+           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
+         },
+         O.1.1 = {
+           first_heading <- '###Support before the beginning of studies.\n'
+           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
+           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
+           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
+         },
+         O.1.3 = {
+           first_heading <- '###Orientation program.\n'
+           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
+           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
+           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
+         },
+         O.2.1 = {
+           first_heading <- '###Helpfulness of units/people.\n'
+           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
+           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
+           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
+         },
+         O.2.2 = {
+           first_heading <- '###Extracurricular activities\n'
+           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
+           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
+           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
+         },
+         O.3.1 = {
+           first_heading <- '###Assessment and feedback channels.\n'
+           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
+           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
+           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
+         },
+         O.4.1 = {
+           first_heading <- '###Teaching and learning.\n'
+           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
+           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
+           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
+         },
+         P.1.1 = {
+           first_heading <- '###Support before the beginning of studies.\n'
+           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
+           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
+           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
+         },
+         P.1.3 = {
+           first_heading <- '###Orientation program.\n'
+           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
+           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
+           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
+         },
+         P.2.1 = {
+           first_heading <- '###Helpfulness of units/people.\n'
+           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
+           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
+           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
+         },
+         P.2.2 = {
+           first_heading <- '###Extracurricular activities\n'
+           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
+           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
+           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
+         },
+         P.3.1 = {
+           first_heading <- '###Assessment and feedback channels.\n'
+           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
+           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
+           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
+         },
+         P.4.1 = {
+           first_heading <- '###Teaching and learning.\n'
+           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
+           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
+           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
+         },
+         Q.1.1 = {
+           first_heading <- '###Support before the beginning of studies.\n'
+           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
+           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
+           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
+         },
+         Q.1.3 = {
+           first_heading <- '###Orientation program.\n'
+           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
+           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
+           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
+         },
+         Q.2.1 = {
+           first_heading <- '###Helpfulness of units/people.\n'
+           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
+           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
+           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
+         },
+         Q.2.2 = {
+           first_heading <- '###Extracurricular activities\n'
+           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
+           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
+           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
+         },
+         Q.3.1 = {
+           first_heading <- '###Assessment and feedback channels.\n'
+           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
+           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
+           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
+         },
+         Q.4.1 = {
+           first_heading <- '###Teaching and learning.\n'
+           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
+           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
+           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
+         }
+  )
+  
+
+  cat(first_heading)
+  cat(intro_text)
+  questionprint(question, dataset = course_dataset, save = FALSE)
+  cat(graph_text)
+  
+  df <- comparative_df(question, course_dataset)
+  z <- xtable(df, caption = sprintf("Summary statistics for %s question", question), digits = c(0,0,2,2,2,2,2,2,2), type = "html")
+  align(z) <- "|p{5.5cm}|cc|c|lllll|"
+  print(z, table.placement="h", floating = FALSE)
+  
+  cat(table_text)
 }

@@ -6,6 +6,12 @@ library(reshape)
 library(grid)
 library(RColorBrewer)
 
+#http://blog.revolutionanalytics.com/2012/09/how-to-use-your-favorite-fonts-in-r-charts.html
+library(extrafont)
+loadfonts()
+Sys.setenv(R_GSCMD = "C:/Program Files/gs/gs9.16/bin/gswin64c.exe")
+
+setwd("C:/Users/Misha/Dropbox/Projects/EM Internship/Quantitative team/2015")
 source("functions.R")
 
 dataset <- read.csv("../Media/2015/Master_tables/bigtable.csv", na.strings = c("", " ", "No answer", "N/A", "NA"), header = TRUE)
@@ -42,4 +48,5 @@ for (i in seq_along(1:2)){
                     output_format = "pdf_document",
                     output_file =  paste("report_", as.character(tenormore$Course[i]), '_', Sys.Date(), ".pdf", sep=''), 
                     output_dir = './test/reports')
+  #embed_fonts(paste("report_", as.character(tenormore$Course[i]), '_', Sys.Date(), ".pdf", sep=''))
 }
