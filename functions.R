@@ -87,7 +87,7 @@ question_prepare <- function(x, dataset = overall){
   # Second element is the name of the question that will be used as a title for the plot.
   question <- dataset[, substr(names(dataset), 1, nchar(x)) == x]
   colnames(question) <- gsub("\\.", " ", colnames(question)) #making names of questions readable
-  name_of_the_question <- extract_name(question, x)
+  name_of_the_question <- extract_name(x)
   colnames(question) <- gsub("(.*?)_(.*)", "\\2", colnames(question)) #leaving just the dimension name
   
   
@@ -107,13 +107,14 @@ question_prepare <- function(x, dataset = overall){
   return(output)
 }
 
-extract_name <- function(question, x){
+extract_name <- function(x){
   #extracts name of the question and returns it
   
   ### x = string containing the identifier of the question (e.g. "B.1.3")
-  ### question = dataset with the respective questions
+  question <- dataset[, substr(names(dataset), 1, nchar(x)) == x]
   name_of_the_question <- gsub("(.*)_(.*)", "\\1", colnames(question)[1]) #storing the name of the section for title of the plot
   name_of_the_question <- substring(name_of_the_question, nchar(x)+1)
+  name_of_the_question <- gsub("\\.", " ", name_of_the_question)
   
   return(name_of_the_question)
 }
@@ -506,3 +507,34 @@ report_question <- function(question, course_dataset){
     cat(table_text)
   }
 }
+
+means_printing <- function(x){
+  ### function to print out a boxplot for any given question. Used in conjuction with means_prepare.
+  
+  # getting the means table for a given question
+  means <- means_prepare(x)[[1]]
+  # melting the means table to use it in plotting
+  melted_means <- as.data.frame(melt(as.matrix(means)))
+
+  #getting name of the question
+  name_of_the_question <- extract_name(x)
+  #wrap statement to have new lines after a given character
+  wrap_function_title <- wrap_format(80)
+  name_of_the_question <- wrap_function_title(name_of_the_question)
+  #same for dimension names
+  wrap_function_label <- wrap_format(40)
+
+  #plotting
+  p <- ggplot(melted_means, aes(y = value, x = X2)) + 
+    ggtitle(name_of_the_question) +
+    geom_boxplot() + 
+    coord_flip() + 
+    ylab("Distribution of means") +
+    #http://stackoverflow.com/questions/21878974/auto-wrapping-of-labels-via-labeller-label-wrap-in-ggplot2
+    scale_x_discrete(labels = function(x) wrap_function_label(x))+
+    theme(axis.title.y=element_blank())
+
+  #saving the resulting graph
+  ggsave(filename = sprintf("./Mean_plots/%s.png", x), plot = p, units = "mm", width = 250, height = (70 + length(levels(factor(melted_means$X2)))*10))
+}
+
