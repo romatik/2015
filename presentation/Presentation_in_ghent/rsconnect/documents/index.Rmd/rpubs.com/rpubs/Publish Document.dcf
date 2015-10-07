@@ -1,0 +1,7 @@
+name: Publish Document
+account: rpubs
+server: rpubs.com
+bundleId:
+        https://api.rpubs.com/api/v1/document/115837/594c3526dc564959896babe7aca23b4b
+url: http://rpubs.com/romatik/115837
+when: 1444067835.5426

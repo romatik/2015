@@ -1,0 +1,15 @@
+base
+dplyr
+ggplot2
+xtable
+likert
+scales
+psych
+reshape
+RColorBrewer
+tidyr
+sp
+rworldmap
+countrycode
+classInt
+pander

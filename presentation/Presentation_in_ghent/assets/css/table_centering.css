@@ -1,0 +1,7 @@
+<style>
+    .table_centering .reaveal .slides,
+    .table_centering .notransform .reveal .slides,
+    .table_centering .reveal .overlay.overlay-help .viewport .viewport-inner {
+        text-align: centered;
+    }
+</style>
