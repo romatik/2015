@@ -323,3 +323,18 @@ write.csv(x = colnames(bigtable_temp), file = "columnnames.csv")
 bigtable <- bigtable_temp
 
 write.csv(x = bigtable, file = "bigtable.csv") #"2015-08-20 10:05:03 CEST"
+
+#######################################################################################
+### cleaning the names of courses. there are many courses with wrong names.
+bigtable <- read.csv("../Media/2015/Master_tables/bigtable.csv", na.strings = c("", " ", "No answer", "N/A", "NA"), header = TRUE, fileEncoding="latin1")
+bigtable$X <- NULL
+bigtable_temp <- bigtable
+
+to_remove_duplicates <- bigtable_temp %>% select(starts_with("A.2."), RespondentID_)
+write.csv(x = to_remove_duplicates, file = "to_remove_duplicates.csv") #"2015-10-10 14:47:11 CEST"
+z <- read.csv("to_remove_duplicates.csv", header = TRUE, fileEncoding="latin1")
+bigtable_temp <- left_join(x = bigtable_temp, y = z, by = "RespondentID_")
+bigtable_temp$A.2.Select.the.name.of.Erasmus.Mundus.master.course._Response. <- NULL
+bigtable <- bigtable_temp
+
+write.csv(x = bigtable, file = "bigtable.csv") #"2015-10-10 16:48:22 CEST"

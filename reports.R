@@ -32,17 +32,17 @@ questions <- c('B.1.1', 'B.1.3', 'B.2.1', 'B.2.2', 'C.1', #overall program satis
 
 ### finding out courses with 10 or more respondents in the dataset
 tenormore <- dataset %>%
-  select(A.2.Select.the.name.of.Erasmus.Mundus.master.course._Response.) %>%
-  group_by(A.2.Select.the.name.of.Erasmus.Mundus.master.course._Response.) %>%
+  select(A.2.name.of.Erasmus.Mundus.master.course.) %>%
+  group_by(A.2.name.of.Erasmus.Mundus.master.course.) %>%
   summarise(respondents = n()) %>%
-  filter(respondents > 10)
+  filter(respondents >= 10)
 colnames(tenormore) <- c("Course", "Respondents")
-dataset <- dataset[(dataset$A.2.Select.the.name.of.Erasmus.Mundus.master.course._Response. %in% tenormore$Course),]
+#dataset <- dataset[(dataset$A.2.name.of.Erasmus.Mundus.master.course. %in% tenormore$Course),]
 
-
+source("functions.R")
 #http://reed.edu/data-at-reed/software/R/markdown_multiple_reports.html
 for (i in seq_along(1:2)){
-  course_dataset <- dataset[dataset$A.2.Select.the.name.of.Erasmus.Mundus.master.course._Response. == tenormore$Course[i],] 
+  course_dataset <- dataset[dataset$A.2.name.of.Erasmus.Mundus.master.course. == tenormore$Course[i],] 
 
   rmarkdown::render('report_script.Rmd',  # file 2
                     output_format = "pdf_document",

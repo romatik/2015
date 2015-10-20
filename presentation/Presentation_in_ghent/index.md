@@ -24,13 +24,13 @@ logo        : logo_ema.gif
 
 ## IP-addresses of respondents
 
-<img src = "assets/img/ip.png"/>
+<img src = "assets/img/ip.jpg"/>
 
 ---
 
 ## Nationalities of respondents
 
-<img src = "assets/img/nationalities.png"/>
+<img src = "assets/img/nationalities_green.jpg"/>
 
 --- .segue bg:grey
 
@@ -40,10 +40,12 @@ logo        : logo_ema.gif
 
 ## Policy
 
-<img src = "assets/img/B.1.1.png" height = 500px/>
-<img src = "assets/img/B.1.3.png" height = 500px/>
-<img src = "assets/img/B.2.1.png" height = 500px/>
-<img src = "assets/img/C.1.png" height = 500px/>
+<img src = "assets/img/L.6.png" height = 500px, width = 900px/>
+
+*** =pnotes
+
+- Easy to see problematic areas.
+- like this list
 
 --- 
 
@@ -63,6 +65,13 @@ logo        : logo_ema.gif
   <tr> <td> Timetable </td> <td align="center"> 23 </td> <td align="center"> 3.30 </td> <td style="text-align:center"> 3.13 </td> <td> 1.75 </td> <td> 2.99 </td> <td> 3.20 </td> <td> 3.33 </td> <td> 3.80 </td> </tr>
    </table>
 
+*** =pnotes
+
+- Not a ranking
+- More like putting each course in a respective bin.
+- However, other measures should be used in conjunction with this information.
+
+
 --- {tpl: twocolumns}
 
 ## Individual university
@@ -75,6 +84,12 @@ logo        : logo_ema.gif
 
 <img src = "assets/img/P.1.3.png" width = 490px, height = 350px/>
 
+*** =pnotes
+
+- Students are from the same program.
+- There is definitely room for improvement.
+- Publishing online.
+
 ---
 
 ## Students
@@ -82,9 +97,18 @@ logo        : logo_ema.gif
 1. Accountability.
 2. Transparency.
 3. Future choice.
-4. ... 
 
---- .segue bg:#CBE7A5
+*** =pnotes
 
-<br> <br> <br> <br> <br>
-<h2 style = "color: #193441"> Thank you for your attention! </h2> <br> <br> <h4> E-mail: em.feedback@em-a.eu </h4>
+For example, students might look at their prospective courses and see what services are lacking to be aware of that situation in advance.
+
+---
+
+## Overall satisfaction
+
+<img src = "assets/img/Overall_satisfaction.png" width = 1000px/>
+
+*** =pnotes
+
+- overall students are satisfied with their courses.
+

@@ -3,8 +3,20 @@ title: "Title of the report"
 author: "Course Quality Advisory Board"
 date: "September 2, 2015"
 output: html_document
+toc: yes
+numbersections: yes
+header-includes:
+    - \usepackage{xcolor}
+    - \definecolor{light-gray}{gray}{0.85}
+    - \usepackage{fancyhdr}
+    - \pagestyle{fancy}
+    - \lfoot{\includegraphics[width=0.75cm]{logo_ema.png}}
+    - \cfoot{`r as.character(tenormore$Course[i])`}
+    - \rfoot{\thepage}  
 ---
+
 ```{r, echo = FALSE}
+#headers - http://tex.stackexchange.com/questions/139139/adding-headers-and-footers-using-pandoc
 suppressWarnings(suppressPackageStartupMessages(library(ggplot2)))
 suppressWarnings(suppressPackageStartupMessages(library(dplyr)))
 suppressWarnings(suppressPackageStartupMessages(library(likert)))
@@ -32,6 +44,8 @@ options(xtable.comment = FALSE)
 knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
 ```
 
+\pagebreak
+
 #Introduction
 ##Course Quality Advisory Board
 C-QAB is a voluntary student organization comprised of current and past Erasmus Mundus students. The focus of C-QAB is to facilitate communication between the Association and the Erasmus Mundus programmes. C-QAB accomplishes this by coordinating the EMA Programme Representatives, conducting an annual student services satisfaction survey and responding to student concerns through its email account. 
@@ -43,67 +57,116 @@ Number of respondents, number of courses with 10+ respondents, tables with cover
 
 ##Structure of the document
 
-This report is structured similar to a survey itself. There are four sections each represented by multiple questions. Each individual question is explained through a graph and a table. 
+There are four sections each represented by multiple questions. Each question is explained through a graph and a table. 
 
 Graph plots the responses from students, while table provides information about how other courses did on that question. Example of a table below:
 
 ```{r, warning=FALSE, echo=FALSE, results='asis'}
 df <- comparative_df(questions[1], course_dataset)
-z <- xtable(df, caption = sprintf("Summary statistics for %s question", questions[1]), digits = c(0,0,2,2,2,2,2,2,2), type = "html")
+df <- df[1:3,]
+z <- xtable(df, caption = sprintf("Example of a table"), digits = c(0,0,2,2,2,2,2,2,2), type = "html")
 align(z) <- "|p{5.5cm}|cc|c|lllll|"
 print(z, table.placement="h", floating = FALSE)
 ```
 
-Each row represents a dimension of the question. It contains information about the mean that question received from students of your program. Following that is the mean for all respondents of the survey. Finally, table provides information about distribution of means in all other courses. Distribution is represented by quantiles. This means that 25% of courses will lie between two adjacent columns (e.g., 0%-25%). This enables easy comparison of any given program with its peers.
+Each row represents a dimension of the question. It contains information about the mean that question received from students of your program. 
 
-Important note: Throughout this report only dimensions with at least 10 respondents will be used. That means that for some dimensions, instead of a mean, there will be a special value NA (not available). We still keep the comparative information for that dimension for reference.
+Calculation of means is based on Likert-scale. Each option corresponds to a numeric value in a following way:
+
+  1. "Very unsatisfied" or "Disagree"= 1.
+  2. "Unsatisfied" or "Somewhat disagree"= 2.
+  3. "Satisfied" or "Somewhat agree" = 3.
+  4. "Very unsatisfied" or "Agree" = 4.
+
+Therefore, average score for any given dimension in a table ranges from a minimum of 1 to a maximum of 4, with 4 being a perfect score for each dimension. 
+
+Following that is the mean for all respondents of the survey. Finally, table provides information about distribution of means in all other courses. Distribution is represented by quantiles. This means that 25% of courses will lie in each of the columns. This enables easy comparison of any given program with its peers. The column with the score of your program is highlighted.
+
+Important note: Throughout this report only dimensions with at least 10 respondents will be used. That means that for some questions will have less dimensions or may be even missing altogether.
 
 ## Executive summary (?)
+
+\pagebreak
 
 #Supporting services
 
 ```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
 report_question("B.1.1", course_dataset)
+report_question("N.1.1", course_dataset)
+report_question("O.1.1", course_dataset)
+report_question("P.1.1", course_dataset)
+report_question("Q.1.1", course_dataset)
+
 ```
 
 ```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
 report_question("B.1.3", course_dataset)
+report_question("N.1.3", course_dataset)
+report_question("O.1.3", course_dataset)
+report_question("P.1.3", course_dataset)
+report_question("Q.1.3", course_dataset)
+
 ```
 
 ```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
 report_question("B.2.1", course_dataset)
+report_question("N.2.1", course_dataset)
+report_question("O.2.1", course_dataset)
+report_question("P.2.1", course_dataset)
+report_question("Q.2.1", course_dataset)
+
 ```
 
-```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
+```{r, echo = FALSE, warning=FALSE, fig.height=2, results = "asis"}
 report_question("B.2.2", course_dataset)
+report_question("N.2.2", course_dataset)
+report_question("O.2.2", course_dataset)
+report_question("P.2.2", course_dataset)
+report_question("Q.2.2", course_dataset)
+
 ```
+
+\pagebreak
 
 #Assessment and feedback
 Some introductory text about the section
 
-```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
+```{r, echo = FALSE, warning=FALSE, fig.height=6, results = "asis"}
 report_question("C.1", course_dataset)
 ```
 
+```{r, echo = FALSE, warning=FALSE, fig.height=3.5, results = "asis"}
+report_question("N.3.1", course_dataset)
+report_question("O.3.1", course_dataset)
+report_question("P.3.1", course_dataset)
+report_question("Q.3.1", course_dataset)
+```
 
-#Thesis supervision and personal development
+\pagebreak
+
+#Teaching/learning and supervision
 Some introductory text about the section
 
-```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
+```{r, echo = FALSE, warning=FALSE, fig.height=2, results = "asis"}
 report_question("L.4", course_dataset)
 ```
 
-```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
+```{r, echo = FALSE, warning=FALSE, fig.height=2.5, results = "asis"}
 report_question("L.5", course_dataset)
 ```
 
+##Teaching/learning
 ```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
-report_question("L.6", course_dataset)
+report_question("N.4.1", course_dataset)
+report_question("O.4.1", course_dataset)
+report_question("P.4.1", course_dataset)
+report_question("Q.4.1", course_dataset)
+
 ```
 
+\pagebreak
 
-
-#Internship/field experience
+#Internship/field experience and personal development
 Some introductory text about the section
 ```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
 report_question("L.2.a", course_dataset)
@@ -113,117 +176,11 @@ report_question("L.2.a", course_dataset)
 report_question("L.3.a", course_dataset)
 ```
 
-
-#Information about specific universities
-Some introductory text about the section
-
-##First university
-Table with universities that were "first"
-
 ```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
-report_question("N.1.1", course_dataset)
+report_question("L.6", course_dataset)
 ```
 
-```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
-report_question("N.1.3", course_dataset)
-```
-
-```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
-report_question("N.2.1", course_dataset)
-```
-
-```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
-report_question("N.2.2", course_dataset)
-```
-
-```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
-report_question("N.3.1", course_dataset)
-```
-
-```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
-report_question("N.4.1", course_dataset)
-```
-
-##Second university
-Table with universities that were "second"
-
-```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
-report_question("O.1.1", course_dataset)
-```
-
-```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
-report_question("O.1.3", course_dataset)
-```
-
-```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
-report_question("O.2.1", course_dataset)
-```
-
-```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
-report_question("O.2.2", course_dataset)
-```
-
-```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
-report_question("O.3.1", course_dataset)
-```
-
-```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
-report_question("O.4.1", course_dataset)
-```
-
-##Third university
-Table with universities that were "third"
-
-```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
-report_question("P.1.1", course_dataset)
-```
-
-```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
-report_question("P.1.3", course_dataset)
-```
-
-```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
-report_question("P.2.1", course_dataset)
-```
-
-```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
-report_question("P.2.2", course_dataset)
-```
-
-```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
-report_question("P.3.1", course_dataset)
-```
-
-```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
-report_question("P.4.1", course_dataset)
-```
-
-##Fourth university
-Table with universities that were "fourth"
-
-```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
-report_question("Q.1.1", course_dataset)
-```
-
-```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
-report_question("Q.1.3", course_dataset)
-```
-
-```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
-report_question("Q.2.1", course_dataset)
-```
-
-```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
-report_question("Q.2.2", course_dataset)
-```
-
-```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
-report_question("Q.3.1", course_dataset)
-```
-
-```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
-report_question("Q.4.1", course_dataset)
-```
+\pagebreak
 
 #Concluding remarks
 Some concluding remarks

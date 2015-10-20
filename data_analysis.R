@@ -33,14 +33,14 @@ questions <- c('B.1.1', 'B.1.3', 'B.2.1', 'B.2.2', 'C.1', #overall program satis
 
 ### finding out courses with 10 or more respondents in the dataset
 tenormore <- dataset %>%
-  select(A.2.Select.the.name.of.Erasmus.Mundus.master.course._Response.) %>%
-  group_by(A.2.Select.the.name.of.Erasmus.Mundus.master.course._Response.) %>%
+  select(A.2.name.of.Erasmus.Mundus.master.course.) %>%
+  group_by(A.2.name.of.Erasmus.Mundus.master.course.) %>%
   summarise(respondents = n()) %>%
-  filter(respondents > 10)
+  filter(respondents >= 10)
 colnames(tenormore) <- c("Course", "Respondents")
   
 ### taking only those entries further for analysis
-dataset <- dataset[(dataset$A.2.Select.the.name.of.Erasmus.Mundus.master.course._Response. %in% tenormore$Course),]
+#dataset <- dataset[(dataset$A.2.name.of.Erasmus.Mundus.master.course. %in% tenormore$Course),]
 
 overall <- select(dataset,
                   RespondentID_,
@@ -73,7 +73,7 @@ for (i in seq_along(tenormore$Course)){
   setwd(file.path(mainDir)) # setting the directory
   
   #subsetting to relevant course
-  course_dataset <- dataset[dataset$A.2.Select.the.name.of.Erasmus.Mundus.master.course._Response. == tenormore$Course[i],] 
+  course_dataset <- dataset[dataset$A.2.name.of.Erasmus.Mundus.master.course. == tenormore$Course[i],] 
   
   #storing the name of the course as a character
   subDir <- make.names(as.character(tenormore$Course[i])) 
@@ -142,7 +142,7 @@ p <- plot(questionl,
 ### plotting heatmaps with respondents
 
 #reading dataset about IP addresses
-ip <- read.csv("C:/Users/Misha/Dropbox/Projects/EM Internship/Quantitative team/Media/2015/Master_tables/ip.csv")
+ip <- read.csv("../Media/2015/Master_tables/ip.csv")
 #combining data to have countries-respondents pairs
 df <- ip %>% select(country_name) %>% group_by(country_name) %>%  summarise(respondents = n())
 #pre-processing for plotting
@@ -153,7 +153,7 @@ classInt <- classIntervals(df[["respondents"]], n = 5, style = "jenks")
 catMethod = classInt[["brks"]]
 colourPalette <- brewer.pal(5, "YlGn")
 mapParams <- mapCountryData(jdf, nameColumnToPlot = "respondents", colourPalette = colourPalette, catMethod = catMethod, addLegend = FALSE)
-do.call(addMapLegend, c(mapParams, legendLabels = "all", legendWidth = 0.5, legendIntervals = "data", legendMar = 9)) #adding legend to a plot
+do.call(addMapLegend, c(mapParams, legendLabels = "all", legendWidth = 0.5, legendIntervals = "data", legendMar = 6.5)) #adding legend to a plot
 
 ### plotting nationalities
 overalldf <- overall %>%
@@ -164,11 +164,11 @@ names(overalldf) <- c("Country", "respondents")
 
 overalldf$iso3 <- countrycode(overalldf$Country, "country.name", "iso3c")
 overalljdf <- joinCountryData2Map(overalldf, joinCode = "ISO3", nameJoinColumn = "iso3")
-classInt <- classIntervals(df[["respondents"]], n = 5, style = "jenks")
+classInt <- classIntervals(overalldf[["respondents"]], n = 5, style = "jenks")
 catMethod = classInt[["brks"]]
 colourPalette <- brewer.pal(5, "YlGn")
 mapParams <- mapCountryData(overalljdf, nameColumnToPlot = "respondents", colourPalette = colourPalette, catMethod = catMethod, addLegend = FALSE)
-do.call(addMapLegend, c(mapParams, legendLabels = "all", legendWidth = 0.5, legendIntervals = "data", legendMar = 9))
+do.call(addMapLegend, c(mapParams, legendLabels = "all", legendWidth = 0.5, legendIntervals = "data", legendMar = 6.5))
 
 ###creating table with regions
 overalldf$iso3 <- countrycode(overalldf$Country, "country.name", "iso3c")
