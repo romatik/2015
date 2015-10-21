@@ -204,6 +204,16 @@ comparative_df <- function(x, course_dataset){
   
   names(df) <- c("Mean", "n", "EM mean", "0 - 25", "25 - 50", "50 - 75", "75 - 100", "quartile")
   
+  df <- df[complete.cases(df),] #deleting all rows with NA in the mean
+  
+  #http://stackoverflow.com/questions/24553963/xtable-for-conditional-cell-formatting-significant-p-values-of-table
+  for(i in seq(1:nrow(df))){
+    df[i, df$quartile[i] + 3] <- paste0("\\colorbox{light-gray}{", df[i, df$quartile[i] + 3], "}")
+  }
+  
+  df$quartile <- NULL
+  
+  
   return(df[,c(2,1,3:ncol(df))])
 }
 
@@ -518,17 +528,9 @@ report_question <- function(question, course_dataset){
     cat(graph_text)
     
     df <- comparative_df(question, course_dataset)
-    df <- df[complete.cases(df),]
-    
-    #http://stackoverflow.com/questions/24553963/xtable-for-conditional-cell-formatting-significant-p-values-of-table
-    for(i in seq(1:nrow(df))){
-      df[i, df$quartile[i] + 3] <- paste0("\\colorbox{light-gray}{", df[i, df$quartile[i] + 3], "}")
-    }
-    
-    df$quartile <- NULL
     
     z <- xtable(df, caption = sprintf("Summary statistics for %s question", question), digits = c(0,0,2,2,2,2,2,2), type = "html")
-    align(z) <- "|p{5.5cm}|cc|c|cccc|"
+    align(z) <- "|p{5cm}|cc|c|cccc|"
     print(z, table.placement="h", floating = FALSE, NA.string = "NA", sanitize.text.function = function(x) x)
     
     cat(table_text)
