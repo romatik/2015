@@ -111,35 +111,30 @@ questionprint_grouping("B.1.1", grouping = overall$A.9.Gender._Response, groupin
 
 #########################################################################################################################################
 ### plotting the overall satisfaction questions
-z <- c("C.3.Please.rate.academic.satisfaction.with.EM.course._", "C.4.Please.rate.overall.satisfaction.with.EM.course._")
+z <- c("C.3.Please.rate.academic.satisfaction.with.EM.course._", 
+       "C.4.Please.rate.overall.satisfaction.with.EM.course._",
+       "N.5.1.Please.rate.overall.satisfaction.at.the.first.university._",
+       "O.5.1.Please.rate.overall.satisfaction.at.the.second.university._",
+       "P.5.1.Please.rate.overall.satisfaction.at.the.third.university._",
+       "Q.5.1.Please.rate.overall.satisfaction.at.the.fourth.university._")
 question <- dataset[, z]
 for(i in seq_along(question)) {
   ### this step will also reduce all other answers to NA's
   question[,i] <- factor(question[,i], levels = likert_levels)
 }
-names(question) <- c("Overall academic satisfaction", "Overall satisfaction")
-questionl <- likert(question)
-p <- plot(questionl, 
-          plot.percents = TRUE, # displaying percents for each answer
-          plot.percent.low = FALSE,  # displaying cummulative percents for negative answers
-          plot.percent.high = FALSE, # displaying cummulative percents for positive answers
-          centered = FALSE, # stretcthing the bar from left to right
-          text.size = 2,
-          wrap = 40, # wrap statement for dimension names
-          legend.position = "top") + 
-  ggtitle("Overall satisfaction with EM course") + # title of the question
-  theme(text = element_text(size = 10, family = "Source Sans Pro"), # setting the text size of the plot
-        plot.margin = unit(c(0, 0.8, 0.3, 0), "lines"), # decreasing white space around the plot
-        legend.margin = unit(0, "lines"), # deleting space around legend
-        legend.key.size = unit(0.5, "lines"), # decreasing size of legend elements
-        legend.background = element_rect(colour = "gray", fill = NA, size = 0.1)) +# adding a frame around the legend
-  geom_hline(yintercept=seq(25, 75, by=25), linetype = "dashed", size = 0.2) + # adding dashed lines at 25, 50, 75% to make it more clear
-  coord_fixed() +
-  coord_flip(ylim = c(-1,101)) #reducing white space left to 0 and right to 100
+names(question) <- c("Overall academic satisfaction", 
+                     "Overall satisfaction",
+                     "Overall satisfaction in 1st university",
+                     "Overall satisfaction in 2nd university",
+                     "Overall satisfaction in 3rd university",
+                     "Overall satisfaction in 4th university")
+question <- question[, colSums(!is.na(question)) >= 10]
 
+p <- plot_question(question, "Overall satisfaction")
+plot(p)
 
 #########################################################################################################################################
-### plotting heatmaps with respondents
+### plotting maps with respondents
 
 #reading dataset about IP addresses
 ip <- read.csv("../Media/2015/Master_tables/ip.csv")
@@ -169,6 +164,9 @@ catMethod = classInt[["brks"]]
 colourPalette <- brewer.pal(5, "YlGn")
 mapParams <- mapCountryData(overalljdf, nameColumnToPlot = "respondents", colourPalette = colourPalette, catMethod = catMethod, addLegend = FALSE)
 do.call(addMapLegend, c(mapParams, legendLabels = "all", legendWidth = 0.5, legendIntervals = "data", legendMar = 6.5))
+#plotting with gvis
+Geo <- gvisGeoChart(overalldf, colorvar = "respondents", locationvar = "Country", options = list(projection = "kavrayskiy-vii"))
+plot(Geo)
 
 ###creating table with regions
 overalldf$iso3 <- countrycode(overalldf$Country, "country.name", "iso3c")

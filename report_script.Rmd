@@ -8,7 +8,7 @@ numbersections: yes
 header-includes:
     - \usepackage{xcolor}
     - \setlength{\tabcolsep}{3pt}
-    - \definecolor{light-gray}{gray}{0.85}
+    - \definecolor{light-gray}{gray}{0.87}
     - \usepackage{fancyhdr}
     - \pagestyle{fancy}
     - \lfoot{\includegraphics[width=0.75cm]{logo_ema.png}}
@@ -42,7 +42,7 @@ library(RColorBrewer)
 library(xtable)
 library(tidyr)
 options(xtable.comment = FALSE)
-knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, results = 'asis')
 ```
 
 \pagebreak
@@ -62,7 +62,7 @@ There are four sections each represented by multiple questions. Each question is
 
 Graph plots the responses from students, while table provides information about how other courses did on that question. Example of a table below:
 
-```{r, warning=FALSE, echo=FALSE, results='asis'}
+```{r}
 df <- comparative_df(questions[1], course_dataset)
 df <- df[1:3,]
 z <- xtable(df, caption = sprintf("Example of a table"), digits = c(0,0,2,2,2,2,2,2), type = "html")
@@ -87,44 +87,100 @@ Important note: Throughout this report only dimensions with at least 10 responde
 
 ## Executive summary (?)
 
+```{r}
+z <- c("C.3.Please.rate.academic.satisfaction.with.EM.course._", 
+       "C.4.Please.rate.overall.satisfaction.with.EM.course._",
+       "N.5.1.Please.rate.overall.satisfaction.at.the.first.university._",
+       "O.5.1.Please.rate.overall.satisfaction.at.the.second.university._",
+       "P.5.1.Please.rate.overall.satisfaction.at.the.third.university._",
+       "Q.5.1.Please.rate.overall.satisfaction.at.the.fourth.university._")
+question <- course_dataset[, z]
+for(i in seq_along(question)) {
+  ### this step will also reduce all other answers to NA's
+  question[,i] <- factor(question[,i], levels = likert_levels)
+}
+names(question) <- c("Overall academic satisfaction", 
+                     "Overall satisfaction",
+                     "Overall satisfaction in 1st university",
+                     "Overall satisfaction in 2nd university",
+                     "Overall satisfaction in 3rd university",
+                     "Overall satisfaction in 4th university")
+question <- question[, colSums(!is.na(question)) >= 10]
+```
+```{r, fig.height = 1 + 0.5*ncol(question)}
+p <- plot_question(question, "Overall satisfaction")
+plot(p)
+```
+
 \pagebreak
 
 #Supporting services
 
-```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
+```{r, fig.height = figure_height("B.1.1", course_dataset)}
 report_question("B.1.1", course_dataset)
+```
+```{r, fig.height = figure_height("N.1.1", course_dataset)}
 report_question("N.1.1", course_dataset)
+```
+```{r, fig.height = figure_height("O.1.1", course_dataset)}
 report_question("O.1.1", course_dataset)
+```
+```{r, fig.height = figure_height("P.1.1", course_dataset)}
 report_question("P.1.1", course_dataset)
+```
+```{r, fig.height = figure_height("Q.1.1", course_dataset)}
 report_question("Q.1.1", course_dataset)
 
 ```
 
-```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
+```{r, fig.height = figure_height("B.1.3", course_dataset)}
 report_question("B.1.3", course_dataset)
+```
+```{r, fig.height = figure_height("N.1.3", course_dataset)}
 report_question("N.1.3", course_dataset)
+```
+```{r, fig.height = figure_height("O.1.3", course_dataset)}
 report_question("O.1.3", course_dataset)
+```
+```{r, fig.height = figure_height("P.1.3", course_dataset)}
 report_question("P.1.3", course_dataset)
+```
+```{r, fig.height = figure_height("Q.1.3", course_dataset)}
 report_question("Q.1.3", course_dataset)
-
 ```
 
-```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
+
+```{r, fig.height = figure_height("B.2.1", course_dataset)}
 report_question("B.2.1", course_dataset)
+```
+```{r, fig.height = figure_height("N.2.1", course_dataset)}
 report_question("N.2.1", course_dataset)
+```
+```{r, fig.height = figure_height("O.2.1", course_dataset)}
 report_question("O.2.1", course_dataset)
+```
+```{r, fig.height = figure_height("P.2.1", course_dataset)}
 report_question("P.2.1", course_dataset)
+```
+```{r, fig.height = figure_height("Q.2.1", course_dataset)}
 report_question("Q.2.1", course_dataset)
-
 ```
 
-```{r, echo = FALSE, warning=FALSE, fig.height=2, results = "asis"}
-report_question("B.2.2", course_dataset)
-report_question("N.2.2", course_dataset)
-report_question("O.2.2", course_dataset)
-report_question("P.2.2", course_dataset)
-report_question("Q.2.2", course_dataset)
 
+```{r, fig.height = figure_height("B.2.2", course_dataset)}
+report_question("B.2.2", course_dataset)
+```
+```{r, fig.height = figure_height("N.2.2", course_dataset)}
+report_question("N.2.2", course_dataset)
+```
+```{r, fig.height = figure_height("O.2.2", course_dataset)}
+report_question("O.2.2", course_dataset)
+```
+```{r, fig.height = figure_height("P.2.2", course_dataset)}
+report_question("P.2.2", course_dataset)
+```
+```{r, fig.height = figure_height("Q.2.2", course_dataset)}
+report_question("Q.2.2", course_dataset)
 ```
 
 \pagebreak
@@ -132,14 +188,20 @@ report_question("Q.2.2", course_dataset)
 #Assessment and feedback
 Some introductory text about the section
 
-```{r, echo = FALSE, warning=FALSE, fig.height=6, results = "asis"}
+```{r, fig.height = figure_height("C.1", course_dataset)}
 report_question("C.1", course_dataset)
 ```
 
-```{r, echo = FALSE, warning=FALSE, fig.height=3.5, results = "asis"}
+```{r, fig.height = figure_height("N.3.1", course_dataset)}
 report_question("N.3.1", course_dataset)
+```
+```{r, fig.height = figure_height("O.3.1", course_dataset)}
 report_question("O.3.1", course_dataset)
+```
+```{r, fig.height = figure_height("P.3.1", course_dataset)}
 report_question("P.3.1", course_dataset)
+```
+```{r, fig.height = figure_height("Q.3.1", course_dataset)}
 report_question("Q.3.1", course_dataset)
 ```
 
@@ -147,37 +209,39 @@ report_question("Q.3.1", course_dataset)
 
 #Teaching/learning and supervision
 Some introductory text about the section
-
-```{r, echo = FALSE, warning=FALSE, fig.height=2, results = "asis"}
+```{r, fig.height = figure_height("L.4", course_dataset)}
 report_question("L.4", course_dataset)
 ```
-
-```{r, echo = FALSE, warning=FALSE, fig.height=2.5, results = "asis"}
+```{r, fig.height = figure_height("L.5", course_dataset)}
 report_question("L.5", course_dataset)
 ```
 
 ##Teaching/learning
-```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
+```{r, fig.height = figure_height("N.4.1", course_dataset)}
 report_question("N.4.1", course_dataset)
+```
+```{r, fig.height = figure_height("O.4.1", course_dataset)}
 report_question("O.4.1", course_dataset)
+```
+```{r, fig.height = figure_height("P.4.1", course_dataset)}
 report_question("P.4.1", course_dataset)
+```
+```{r, fig.height = figure_height("Q.4.1", course_dataset)}
 report_question("Q.4.1", course_dataset)
-
 ```
 
 \pagebreak
 
 #Internship/field experience and personal development
 Some introductory text about the section
-```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
+
+```{r, fig.height = figure_height("L.2.a", course_dataset)}
 report_question("L.2.a", course_dataset)
 ```
-
-```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
+```{r, fig.height = figure_height("L.3.a", course_dataset)}
 report_question("L.3.a", course_dataset)
 ```
-
-```{r, echo = FALSE, warning=FALSE, fig.height=4, results = "asis"}
+```{r, fig.height = figure_height("L.6", course_dataset)}
 report_question("L.6", course_dataset)
 ```
 
