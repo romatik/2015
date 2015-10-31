@@ -190,7 +190,11 @@ comparative_df <- function(x, course_dataset){
   
   #http://stackoverflow.com/questions/24553963/xtable-for-conditional-cell-formatting-significant-p-values-of-table
   for(i in seq(1:nrow(df))){
-    df[i, df$quartile[i] + 3] <- paste0("\\colorbox{light-gray}{", df[i, df$quartile[i] + 3], "}")
+    df[i, df$quartile[i] + 3] <- paste0("\\colorbox{table-hl}{", df[i, df$quartile[i] + 3], "}")
+    
+    #highlighting every other row with gray color
+    if(i %% 2 == 0)
+      rownames(df)[i] <- paste("\\rowcolor{table-hl!40}", rownames(df)[i])
   }
   
   df$quartile <- NULL
@@ -293,31 +297,31 @@ report_question <- function(question, course_dataset){
   
   switch(question,
          B.1.1 = {
-           first_heading <- '##Support received before the start of the Erasmus Mundus course\n'
+           first_heading <- '###Consortia\n'
            intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
            graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
            table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
          },
          B.1.3 = {
-           first_heading <- '##Support received during the orientaion program.\n'
+           first_heading <- '###Consortia\n'
            intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
            graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
            table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
          },
          B.2.1 = {
-           first_heading <- '##Helpfulness of units and people\n'
+           first_heading <- '###Consortia\n'
            intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
            graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
            table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
          },
          B.2.2 = {
-           first_heading <- '##Support received on various issues.\n'
+           first_heading <- '###Consortia\n'
            intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
            graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
            table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
          },
          C.1 = {
-           first_heading <- '##Module assessment.\n'
+           first_heading <- '###Consortia\n'
            intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
            graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
            table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
@@ -510,15 +514,21 @@ report_question <- function(question, course_dataset){
     #prtinting out the question
     questionprint(question, dataset = course_dataset, save = FALSE)
     
-    cat(graph_text)
+    cat("\n")
+    #cat(graph_text)
     
-    #preparing and printing table
-    df <- comparative_df(question, course_dataset)
-    z <- xtable(df, caption = sprintf("Summary statistics for %s question", question), digits = c(0,0,2,2,2,2,2,2), type = "html")
-    align(z) <- "|p{5cm}|cc|c|cccc|"
-    print(z, table.placement="h", floating = FALSE, NA.string = "NA", sanitize.text.function = function(x) x)
+    not_print <- c("N", "O", "P", "Q") #not printing comparative tables for questions on specific university
     
-    cat(table_text)
+    if (!(substr(question, 1, 1) %in% not_print)) {  
+      #preparing and printing table
+      df <- comparative_df(question, course_dataset)
+      z <- xtable(df, caption = sprintf("Summary statistics"), digits = c(0,0,2,2,2,2,2,2), type = "html")
+      align(z) <- "|p{5cm}|cc|c|cccc|"
+      print(z, NA.string = "NA", sanitize.text.function = function(x) x)
+    }  
+    
+    cat("\n")
+    #cat(table_text)
   }
 }
 
@@ -559,7 +569,7 @@ figure_height <- function(question, course_dataset){
   
   try_flag <- tryCatch(comparative_df(question, course_dataset), error = function(err) return(TRUE)) 
   if(!is.logical(try_flag)){ #checking if try_flag is logical. If it is, then do nothing. Otherwise print out the information about the question.
-     return (1+0.5*nrow(comparative_df(question, course_dataset)))
+     return (1+0.4*nrow(comparative_df(question, course_dataset)))
   } else
     return (0) #return 0 height in case there is nothing to print
 }

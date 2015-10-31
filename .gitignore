@@ -45,3 +45,4 @@ Temporary Items
 *.RData
 *.Rhistory
 *.Rhistory
+.Rhistory

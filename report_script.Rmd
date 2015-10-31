@@ -1,19 +1,23 @@
 ---
-title: "Title of the report"
-author: "Course Quality Advisory Board"
-date: "September 2, 2015"
-output: html_document
+title: "`r as.character(tenormore$Course[i])`"
+output: 
+  pdf_document:
+    includes:
+      before_body: header.tex
 toc: yes
 numbersections: yes
+fig_caption: true
 header-includes:
-    - \usepackage{xcolor}
+    - \usepackage{colortbl, xcolor, titling}
     - \setlength{\tabcolsep}{3pt}
-    - \definecolor{light-gray}{gray}{0.87}
+    - \definecolor{table-hl}{RGB}{90, 180, 172}
     - \usepackage{fancyhdr}
     - \pagestyle{fancy}
     - \lfoot{\includegraphics[width=0.75cm]{logo_ema.png}}
     - \cfoot{\fontsize{8}{12} \selectfont `r as.character(tenormore$Course[i])`}
     - \rfoot{\thepage}  
+    - \usepackage{titling}
+    - \input{header}
 ---
 
 ```{r, echo = FALSE}
@@ -47,45 +51,7 @@ knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, results = 'asis'
 
 \pagebreak
 
-#Introduction
-##Course Quality Advisory Board
-C-QAB is a voluntary student organization comprised of current and past Erasmus Mundus students. The focus of C-QAB is to facilitate communication between the Association and the Erasmus Mundus programmes. C-QAB accomplishes this by coordinating the EMA Programme Representatives, conducting an annual student services satisfaction survey and responding to student concerns through its email account. 
-
-If you have any concerns or would like to request some additional information, feel free to contact us through e-mail: em.feedback@em-a.eu.
-
-##Some stuff about the survey
-Number of respondents, number of courses with 10+ respondents, tables with coverage and response rates.
-
-##Structure of the document
-
-There are four sections each represented by multiple questions. Each question is explained through a graph and a table. 
-
-Graph plots the responses from students, while table provides information about how other courses did on that question. Example of a table below:
-
-```{r}
-df <- comparative_df(questions[1], course_dataset)
-df <- df[1:3,]
-z <- xtable(df, caption = sprintf("Example of a table"), digits = c(0,0,2,2,2,2,2,2), type = "html")
-align(z) <- "|p{5cm}|cc|c|cccc|"
-print(z, table.placement="h", floating = FALSE, NA.string = "NA", sanitize.text.function = function(x) x)
-```
-
-Each row represents a dimension of the question. It contains information about the mean that question received from students of your program. 
-
-Calculation of means is based on Likert-scale. Each option corresponds to a numeric value in a following way:
-
-  1. "Very unsatisfied" or "Disagree"= 1.
-  2. "Unsatisfied" or "Somewhat disagree"= 2.
-  3. "Satisfied" or "Somewhat agree" = 3.
-  4. "Very satisfied" or "Agree" = 4.
-
-Therefore, average score for any given dimension in a table ranges from a minimum of 1 to a maximum of 4, with 4 being a perfect score for each dimension. 
-
-Following that is the mean for all respondents of the survey. Finally, table provides information about distribution of means in all other courses. Distribution is represented by quantiles. This means that 25% of courses will lie in each of the columns. This enables easy comparison of any given program with its peers. The column with the score of your program is highlighted.
-
-Important note: Throughout this report only dimensions with at least 10 respondents will be used. That means that some questions will have less dimensions or may be even missing altogether.
-
-## Executive summary (?)
+# Executive summary (?)
 
 ```{r}
 z <- c("C.3.Please.rate.academic.satisfaction.with.EM.course._", 
@@ -107,14 +73,61 @@ names(question) <- c("Overall academic satisfaction",
                      "Overall satisfaction in 4th university")
 question <- question[, colSums(!is.na(question)) >= 10]
 ```
-```{r, fig.height = 1 + 0.5*ncol(question)}
+```{r, fig.height = 1 + 0.4*ncol(question)}
 p <- plot_question(question, "Overall satisfaction")
 plot(p)
 ```
 
+
+#Introduction
+##Course Quality Advisory Board
+CQAB is an independent advisory body that operates on a voluntary basis, and its members have not and do not receive financial benefits from their CQAB related activity. Membership to CQAB is assured through a competitive recruitment process among EMA members. Internally, CQAB has three main separate structures: 
+
+  1. Programme Representative Network (PRnet), aimed at coordinating the relation between Erasmus Mundus courses and EMA.
+  2. Management of the em.feedback@em-a.eu, that assists students with pressing quality issues. 
+  3. Survey Team, tasked with conducting the CQSS survey. 
+  
+CQAB was created as a result of the pressing and constant concerns of EMA members about the quality of the student experiences as part of an Erasmus Mundus (EM) course. Internally, CQAB has a variety of tools to capture student concerns and to interact with student representatives from various programmes, but the CQSS survey represents its most comprehensive and systematic initiative focused on quality assurance. The inception and design of CQSS is enrooted in the complexity of the EMJMD student experience and driven by two distinct factors: the perceived systemic issues around quality across courses, and the general underrepresentation of students in evaluating the EMJMD programme. 
+
+For any concerns, questions or feedback on this report, please contact us at chair.cqab@em-a.eu.
+
+##Introduction to the CQSS survey
+Number of respondents, number of courses with 10+ respondents, tables with coverage and response rates.
+
+##Structure of current report
+
+The report focuses on providing your course with customized information received from students. The information in this report follows the structure of the CQSS survey. As such, information on how students attending the course evaluated their overall course experience, and also how various universities in the consortia were experienced by students. Only idicators with 10 or more responses are included in the report. 
+
+The largest section of the report focuses on providing information about the supporting services available to students before the start of the EMJMD programme, during orientation, the general helpfulness of various units and individuals, as well as the support received on specific student issues. The following section focuses on indicators capturing the assessment and feedback processes. In section four, the responses of students to questions pertaining to teaching, learning and supervision are highlighted. Before concluding, section five touches aon the internship, field experience and personal development aspects evaluated as part of the CQSS survey.
+
+Graph plots the responses from students, while table provides information about how other courses did on that question. Example of a table below:
+
+```{r}
+df <- comparative_df(questions[1], course_dataset)
+df <- df[1:3,]
+z <- xtable(df, caption = sprintf("Example of a table"), digits = c(0,0,2,2,2,2,2,2), type = "html")
+align(z) <- "|p{5cm}|cc|c|cccc|"
+print(z, table.placement="h", floating = FALSE, NA.string = "NA", sanitize.text.function = function(x) x)
+```
+
+Each row represents a dimension of the question. It contains information about the mean that question received from students of your program. 
+
+Calculation of means is based on Likert-scale. Each option corresponds to a numeric value in a following way:
+
+  1. "Very unsatisfied" or "Disagree"= 1.
+  2. "Unsatisfied" or "Somewhat disagree"= 2.
+  3. "Satisfied" or "Somewhat agree" = 3.
+  4. "Very satisfied" or "Agree" = 4.
+
+Therefore, average score for any given dimension in a table ranges from a minimum of 1 to a maximum of 4, with 4 being a perfect score for each dimension.
+
+Following that is the mean for all respondents of the survey. Finally, table provides information about distribution of means in all other courses. Distribution is represented by quantiles. This means that 25% of courses will lie in each of the columns. This enables easy comparison of any given program with its peers. The column with the score of your program is highlighted.
+
 \pagebreak
 
 #Supporting services
+
+##Support received before the start of the Erasmus Mundus course
 
 ```{r, fig.height = figure_height("B.1.1", course_dataset)}
 report_question("B.1.1", course_dataset)
@@ -133,6 +146,8 @@ report_question("Q.1.1", course_dataset)
 
 ```
 
+##Support received during the orientaion program
+
 ```{r, fig.height = figure_height("B.1.3", course_dataset)}
 report_question("B.1.3", course_dataset)
 ```
@@ -149,6 +164,7 @@ report_question("P.1.3", course_dataset)
 report_question("Q.1.3", course_dataset)
 ```
 
+##Helpfulness of units and people
 
 ```{r, fig.height = figure_height("B.2.1", course_dataset)}
 report_question("B.2.1", course_dataset)
@@ -166,6 +182,7 @@ report_question("P.2.1", course_dataset)
 report_question("Q.2.1", course_dataset)
 ```
 
+##Support received on various issues
 
 ```{r, fig.height = figure_height("B.2.2", course_dataset)}
 report_question("B.2.2", course_dataset)
@@ -188,6 +205,8 @@ report_question("Q.2.2", course_dataset)
 #Assessment and feedback
 Some introductory text about the section
 
+##Module assessment
+
 ```{r, fig.height = figure_height("C.1", course_dataset)}
 report_question("C.1", course_dataset)
 ```
@@ -208,7 +227,9 @@ report_question("Q.3.1", course_dataset)
 \pagebreak
 
 #Teaching/learning and supervision
+
 Some introductory text about the section
+
 ```{r, fig.height = figure_height("L.4", course_dataset)}
 report_question("L.4", course_dataset)
 ```
@@ -217,6 +238,7 @@ report_question("L.5", course_dataset)
 ```
 
 ##Teaching/learning
+
 ```{r, fig.height = figure_height("N.4.1", course_dataset)}
 report_question("N.4.1", course_dataset)
 ```
@@ -247,5 +269,5 @@ report_question("L.6", course_dataset)
 
 \pagebreak
 
-#Concluding remarks
+#Acknowledgments
 Some concluding remarks
