@@ -1,5 +1,7 @@
 ---
 title: "`r as.character(tenormore$Course[i])`"
+author: "Course Quality Advisory Board of the Erasmus Mundus Student and Alumni Association"
+date: "Report was generated on `r Sys.Date()`"
 output: 
   pdf_document:
     includes:

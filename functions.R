@@ -24,7 +24,7 @@ questionprint <- function(x, dataset = overall, save = TRUE){
       #try(printing_alpha(x, question))
       
       ### creating likert-type variable to print it out
-      wrap_function <- wrap_format(60) #wrap-function to print question correctly
+      wrap_function <- wrap_format(75) #wrap-function to print question correctly
       name_of_the_question <- wrap_function(name_of_the_question)
       
       p <- plot_question(question, name_of_the_question)
