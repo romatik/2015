@@ -24,7 +24,7 @@ questionprint <- function(x, dataset = overall, save = TRUE){
       #try(printing_alpha(x, question))
       
       ### creating likert-type variable to print it out
-      wrap_function <- wrap_format(75) #wrap-function to print question correctly
+      wrap_function <- wrap_format(85) #wrap-function to print question correctly
       name_of_the_question <- wrap_function(name_of_the_question)
       
       p <- plot_question(question, name_of_the_question)
@@ -596,7 +596,8 @@ plot_question <- function(question, name_of_the_question){
           legend.margin = unit(0, "lines"), # deleting space around legend
           legend.key.size = unit(0.5, "lines"), # decreasing size of legend elements
           legend.background = element_rect(colour = "gray", fill = NA, size = 0.1), # adding a frame around the legend
-          axis.title.x=element_blank()) +
+          axis.title.x=element_blank(), #deleting x-label 
+          plot.title = element_text(size = 10)) + #
     geom_hline(yintercept=seq(25, 75, by=25), linetype = "dashed", size = 0.2) + # adding dashed lines at 25, 50, 75% to make it more clear
     coord_fixed() +
     coord_flip(ylim = c(-1,101)) #reducing white space left to 0 and right to 100
