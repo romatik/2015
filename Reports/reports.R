@@ -39,13 +39,14 @@ colnames(tenormore) <- c("Course", "Respondents")
 #dataset <- dataset[(dataset$A.2.name.of.Erasmus.Mundus.master.course. %in% tenormore$Course),]
 
 source("functions.R")
+today_date <- as.character(format(Sys.Date(), "%d %b %Y"))
 #http://reed.edu/data-at-reed/software/R/markdown_multiple_reports.html
 for (i in seq_along(1:2)){
   course_dataset <- dataset[dataset$A.2.name.of.Erasmus.Mundus.master.course. == tenormore$Course[i],] 
 
-  rmarkdown::render('report_script.Rmd',  # file 2
+  rmarkdown::render('./Reports/report_script.Rmd',  # file 2
                     output_format = "pdf_document",
                     output_file =  paste("report_", as.character(tenormore$Course[i]), '_', Sys.Date(), ".pdf", sep=''), 
-                    output_dir = './test/reports')
+                    output_dir = './Reports/courses')
   #embed_fonts(paste("report_", as.character(tenormore$Course[i]), '_', Sys.Date(), ".pdf", sep=''))
 }

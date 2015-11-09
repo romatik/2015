@@ -338,3 +338,19 @@ bigtable_temp$A.2.Select.the.name.of.Erasmus.Mundus.master.course._Response. <- 
 bigtable <- bigtable_temp
 
 write.csv(x = bigtable, file = "bigtable.csv") #"2015-10-10 16:48:22 CEST"
+
+#######################################################################################
+### cleaning names of some courses
+bigtable <- read.csv("../Media/2015/Master_tables/bigtable.csv", na.strings = c("", " ", "No answer", "N/A", "NA"), header = TRUE)
+bigtable$X <- NULL
+bigtable_temp <- bigtable
+
+bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course. <- gsub("GEMMA-Master`s Degree in Women`s and Gender Studies", "GEMMA-Master's Degree in Women's and Gender Studies", bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course.)
+bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course. <- gsub("CEMACUBE-Common European Master`s Course in Biomedical Engineering", "CEMACUBE-Common European Master's Course in Biomedical Engineering", bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course.)
+bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course. <- gsub("IMQP-International Master in Quaternary and Prehistory Master International en Quaternaire et PrÃfÂfÃ,Â©histoire", "IMQP-International Master in Quaternary and Prehistory, Master International en Quaternaire et Prehistoire", bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course.)
+bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course. <- gsub("MITRA-MÃfÂfÃ,Â©diation interculturelle: identitÃfÂfÃ,Â©s, mobilitÃfÂfÃ,Â©s, conflits", "MITRA-Mediation interculturelle: identites, mobilites, conflits", bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course.)
+bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course. <- gsub("AFEPA-European MasterÃfÂ¢Ã,Â???Ã,ÂTs programme in Agricultural, Food and Environmental Policy Analysis ", "AFEPA-European Master's programme in Agricultural, Food and Environmental Policy Analysis", bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course.)
+bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course. <- gsub("EMARO+-European Master on Advanced Robotics +", "EMARO - European Master on Advanced Robotics", bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course.)
+bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course. <- gsub("MUNDUS JOURNALISM\t-Erasmus Mundus Masters Journalism, Media and Globalisation", "MUNDUS JOURNALISM - Erasmus Mundus Masters Journalism, Media and Globalisation", bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course.)
+
+write.csv(x = bigtable_temp, file = "bigtable.csv") #"2015-11-05 16:25:32 CET"

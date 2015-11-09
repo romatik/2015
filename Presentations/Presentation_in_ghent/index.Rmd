@@ -1,16 +1,16 @@
 ---
-title       : Quantitative results of CQSS
-subtitle    : Quality meeting in Ghent
-author      : Mikhail Balyasin
-job         : Head of Quantitative team of CQAB
-framework   : io2012        # {io2012, html5slides, shower, dzslides, ...}
-highlighter : highlight.js  # {highlight.js, prettify, highlight}
-hitheme     : tomorrow      # 
-widgets     : []            # {mathjax, quiz, bootstrap}
-mode        : standalone # {standalone, draft, selfcontained}
-knit        : slidify::knit2slides
-logo        : logo_ema.gif
-
+title: "Quantitative results of CQSS"
+author: "Mikhail Balyasin"
+highlighter: highlight.js
+output: pdf_document
+job: Head of Quantitative team of CQAB
+knit: slidify::knit2slides
+logo: logo_ema.gif
+mode: standalone
+hitheme: tomorrow
+subtitle: Quality meeting in Ghent
+framework: io2012
+widgets: []
 ---
 
 ## Demographics

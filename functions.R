@@ -23,7 +23,6 @@ questionprint <- function(x, dataset = overall, save = TRUE){
       ### calculating Cronbach's alpha. If there is an error it won't print out anything
       #try(printing_alpha(x, question))
       
-      ### creating likert-type variable to print it out
       wrap_function <- wrap_format(85) #wrap-function to print question correctly
       name_of_the_question <- wrap_function(name_of_the_question)
       
@@ -184,7 +183,7 @@ comparative_df <- function(x, course_dataset){
   df$Row.names <- NULL
   
   
-  names(df) <- c("Mean", "n", "EM mean", "0 - 25", "25 - 50", "50 - 75", "75 - 100", "quartile")
+  names(df) <- c("Mean", "n", "EM mean", "0\\% - 25\\%", "25\\% - 50\\%", "50\\% - 75\\%", "75\\% - 100\\%", "quartile")
   
   df <- df[complete.cases(df),] #deleting all rows with NA in the mean
   
@@ -275,7 +274,7 @@ heatmap_printing <- function(means, vector, scaled = TRUE, saved = TRUE){
     scale_fill_manual(name = levels(means_matrix_melted$value1), 
                       values = mycolors,
                       na.value = "black", # default color for NA values
-                      drop = FALSE) + # not dropping levels with 0 
+                      drop = FALSE) + # not dropping levels with 0 values in them
     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),          
           axis.title.x=element_blank(),
           axis.title.y=element_blank()) 
@@ -507,15 +506,16 @@ report_question <- function(question, course_dataset){
   try_flag <- tryCatch(comparative_df(question, course_dataset), error = function(err) return(TRUE)) 
   
   if(!is.logical(try_flag)){ #checking if try_flag is logical. If it is, then do nothing. Otherwise print out the information about the question.
-    temp <- sprintf("\n%s%s%s\n", first_heading, "Question:", question)
+    temp <- sprintf("\n%s%s%s\n\n", first_heading, "Question:", question)
     cat(temp)
-    cat(intro_text)
+    #cat(intro_text)
+    cat("\n")
     
     #prtinting out the question
     questionprint(question, dataset = course_dataset, save = FALSE)
     
-    cat("\n")
     #cat(graph_text)
+    cat("\n")
     
     not_print <- c("N", "O", "P", "Q") #not printing comparative tables for questions on specific university
     
@@ -597,7 +597,7 @@ plot_question <- function(question, name_of_the_question){
           legend.key.size = unit(0.5, "lines"), # decreasing size of legend elements
           legend.background = element_rect(colour = "gray", fill = NA, size = 0.1), # adding a frame around the legend
           axis.title.x=element_blank(), #deleting x-label 
-          plot.title = element_text(size = 10)) + #
+          plot.title = element_text(size = 10)) + #size of the text in the title
     geom_hline(yintercept=seq(25, 75, by=25), linetype = "dashed", size = 0.2) + # adding dashed lines at 25, 50, 75% to make it more clear
     coord_fixed() +
     coord_flip(ylim = c(-1,101)) #reducing white space left to 0 and right to 100

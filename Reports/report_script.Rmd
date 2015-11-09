@@ -1,7 +1,7 @@
 ---
 title: "`r as.character(tenormore$Course[i])`"
 author: "Course Quality Advisory Board of the Erasmus Mundus Student and Alumni Association"
-date: "Report was generated on `r Sys.Date()`"
+date: "Report was generated on `r today_date`"
 output: 
   pdf_document:
     includes:
@@ -10,15 +10,13 @@ toc: yes
 numbersections: yes
 fig_caption: true
 header-includes:
-    - \usepackage{colortbl, xcolor, titling}
+    - \usepackage{colortbl, xcolor, titling, fancyhdr}
     - \setlength{\tabcolsep}{3pt}
     - \definecolor{table-hl}{RGB}{90, 180, 172}
-    - \usepackage{fancyhdr}
     - \pagestyle{fancy}
     - \lfoot{\includegraphics[width=0.75cm]{logo_ema.png}}
     - \cfoot{\fontsize{8}{12} \selectfont `r as.character(tenormore$Course[i])`}
     - \rfoot{\thepage}  
-    - \usepackage{titling}
     - \input{header}
 ---
 
@@ -94,7 +92,10 @@ CQAB was created as a result of the pressing and constant concerns of EMA member
 For any concerns, questions or feedback on this report, please contact us at chair.cqab@em-a.eu.
 
 ##Introduction to the CQSS survey
-Number of respondents, number of courses with 10+ respondents, tables with coverage and response rates.
+
+Our survey was filled in by `r nrow(course_dataset)` students of your program. They represent `r length(unique(course_dataset$A.7.What.is.nationality.please.choose.one.only._Response))` countries and collectively they have spent more than `r as.numeric(round(sum(as.POSIXct(course_dataset$EndDate_) - as.POSIXct(course_dataset$StartDate_))/60))` hours thinking and answering questions of our survey.
+
+We hope that their feedback will help you make your Erasmus Mundus program even more brilliant and unique! 
 
 ##Structure of current report
 
@@ -128,6 +129,7 @@ Following that is the mean for all respondents of the survey. Finally, table pro
 \pagebreak
 
 #Supporting services
+We will have some text here.
 
 ##Support received before the start of the Erasmus Mundus course
 
@@ -205,7 +207,7 @@ report_question("Q.2.2", course_dataset)
 \pagebreak
 
 #Assessment and feedback
-Some introductory text about the section
+We will have some text here.
 
 ##Module assessment
 
@@ -229,8 +231,7 @@ report_question("Q.3.1", course_dataset)
 \pagebreak
 
 #Teaching/learning and supervision
-
-Some introductory text about the section
+We will have some text here.
 
 ```{r, fig.height = figure_height("L.4", course_dataset)}
 report_question("L.4", course_dataset)
@@ -257,7 +258,7 @@ report_question("Q.4.1", course_dataset)
 \pagebreak
 
 #Internship/field experience and personal development
-Some introductory text about the section
+We will have some text here.
 
 ```{r, fig.height = figure_height("L.2.a", course_dataset)}
 report_question("L.2.a", course_dataset)
