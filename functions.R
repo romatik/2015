@@ -1,8 +1,8 @@
 # http://stackoverflow.com/questions/32136304/conditional-calculation-of-mean
 # function calculates the mean only if there are 10 or more respondents to each individual question
-f1 <- function(x) if(sum(!is.na(x))>9) mean(as.numeric(x), na.rm=TRUE) else NA_real_
+f1 <- function(x) if(sum(!is.na(x)) >= 10) mean(as.numeric(x), na.rm=TRUE) else NA_real_
 
-questionprint <- function(x, dataset = overall, save = TRUE){
+questionprint <- function(x, dataset = overall, save = TRUE, name_of_the_question = NULL){
   ### function for printing out the likert plot about each individual section of a survey. It also prints out information about 
   ### Cronbach's alpha level. Can be used further to create similar plots for each individual course.
   
@@ -13,7 +13,9 @@ questionprint <- function(x, dataset = overall, save = TRUE){
   
   z <- question_prepare(x, dataset)
   question <- z[[1]]
-  name_of_the_question <- z[[2]]
+  name_of_the_question <- paste0(z[[2]], name_of_the_question)
+#   if(is.null(name_of_the_question))
+#     name_of_the_question <- z[[2]] #name of the question if no title is provided
   
   ### checking to see if question has more than 1 dimension with 10 or more respondents to proceed. 
   ### Otherwise it doesn't make sense to calculate Cronbach's alpha and plot
@@ -30,9 +32,10 @@ questionprint <- function(x, dataset = overall, save = TRUE){
       if(save){
         ggsave(filename = sprintf("./Question_statistics/%s.png", x), plot = p, units = "mm", width = 180, height = (25 + dim(question)[2]*8)) #making graph a little rubbery
       } else {
-        plot(p)
+        return(p)
       }
-    }
+    } else
+      return (NULL)
   }
 }
 
@@ -67,7 +70,7 @@ question_prepare <- function(x, dataset = overall){
   # Second element is the name of the question that will be used as a title for the plot.
   question <- dataset[, substr(names(dataset), 1, nchar(x)) == x]
   colnames(question) <- gsub("\\.", " ", colnames(question)) #making names of questions readable
-  name_of_the_question <- extract_name(x)
+  name_of_the_question <- extract_name(x, dataset)
   colnames(question) <- gsub("(.*?)_(.*)", "\\2", colnames(question)) #leaving just the dimension name
   
   
@@ -87,7 +90,7 @@ question_prepare <- function(x, dataset = overall){
   return(output)
 }
 
-extract_name <- function(x){
+extract_name <- function(x, dataset = overall){
   #extracts name of the question and returns it
   
   ### x = string containing the identifier of the question (e.g. "B.1.3")
@@ -354,150 +357,6 @@ report_question <- function(question, course_dataset){
            intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
            graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
            table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
-         },
-         N.1.1 = {
-           first_heading <- '###First university.\n'
-           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
-           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
-           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
-         },
-         N.1.3 = {
-           first_heading <- '###First university.\n'
-           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
-           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
-           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
-         },
-         N.2.1 = {
-           first_heading <- '###First university.\n'
-           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
-           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
-           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
-         },
-         N.2.2 = {
-           first_heading <- '###First university.\n'
-           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
-           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
-           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
-         },
-         N.3.1 = {
-           first_heading <- '###First university.\n'
-           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
-           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
-           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
-         },
-         N.4.1 = {
-           first_heading <- '###First university.\n'
-           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
-           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
-           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
-         },
-         O.1.1 = {
-           first_heading <- '###Second university.\n'
-           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
-           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
-           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
-         },
-         O.1.3 = {
-           first_heading <- '###Second university.\n'
-           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
-           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
-           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
-         },
-         O.2.1 = {
-           first_heading <- '###Second university.\n'
-           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
-           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
-           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
-         },
-         O.2.2 = {
-           first_heading <- '###Second university.\n'
-           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
-           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
-           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
-         },
-         O.3.1 = {
-           first_heading <- '###Second university.\n'
-           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
-           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
-           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
-         },
-         O.4.1 = {
-           first_heading <- '###Second university.\n'
-           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
-           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
-           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
-         },
-         P.1.1 = {
-           first_heading <- '###Third university.\n'
-           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
-           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
-           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
-         },
-         P.1.3 = {
-           first_heading <- '###Third university.\n'
-           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
-           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
-           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
-         },
-         P.2.1 = {
-           first_heading <- '###Third university.\n'
-           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
-           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
-           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
-         },
-         P.2.2 = {
-           first_heading <- '###Third university.\n'
-           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
-           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
-           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
-         },
-         P.3.1 = {
-           first_heading <- '###Third university.\n'
-           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
-           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
-           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
-         },
-         P.4.1 = {
-           first_heading <- '###Third university.\n'
-           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
-           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
-           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
-         },
-         Q.1.1 = {
-           first_heading <- '###Fourth university.\n'
-           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
-           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
-           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
-         },
-         Q.1.3 = {
-           first_heading <- '###Fourth university.\n'
-           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
-           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
-           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
-         },
-         Q.2.1 = {
-           first_heading <- '###Fourth university.\n'
-           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
-           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
-           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
-         },
-         Q.2.2 = {
-           first_heading <- '###Fourth university.\n'
-           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
-           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
-           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
-         },
-         Q.3.1 = {
-           first_heading <- '###Fourth university.\n'
-           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
-           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
-           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
-         },
-         Q.4.1 = {
-           first_heading <- '###Fourth university.\n'
-           intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
-           graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
-           table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
          }
   )
   
@@ -512,7 +371,7 @@ report_question <- function(question, course_dataset){
     cat("\n")
     
     #prtinting out the question
-    questionprint(question, dataset = course_dataset, save = FALSE)
+    print(questionprint(question, dataset = course_dataset, save = FALSE))
     
     #cat(graph_text)
     cat("\n")
@@ -569,7 +428,7 @@ figure_height <- function(question, course_dataset){
   
   try_flag <- tryCatch(comparative_df(question, course_dataset), error = function(err) return(TRUE)) 
   if(!is.logical(try_flag)){ #checking if try_flag is logical. If it is, then do nothing. Otherwise print out the information about the question.
-     return (1+0.4*nrow(comparative_df(question, course_dataset)))
+     return (1+0.42*nrow(comparative_df(question, course_dataset)))
   } else
     return (0) #return 0 height in case there is nothing to print
 }
@@ -602,4 +461,98 @@ plot_question <- function(question, name_of_the_question){
     coord_fixed() +
     coord_flip(ylim = c(-1,101)) #reducing white space left to 0 and right to 100
   return(p)
+}
+
+prepare_university <- function(x, course_dataset){
+  # function to prepare a dataset for future use
+  # x = name of the question
+  # course_dataset = dataset that needs to be prepared
+  
+  # returns a dataset:
+  # universities with 10 or more respondents and answers to questions by respondents
+  
+  questions_uni <- c("N.", "O.", "P.", "Q.") #first letters for questions about specific universities
+  x <- substr(x, 3, 5) #updating x to use it in a function. x in the beginning is used to make calls to functions consistent
+  
+  #creating four datasets to merge them leter. Name of the university is used as an ID.
+  first_university <- course_dataset %>%
+    select(University.1,
+           starts_with(paste0(questions_uni[1], x)))
+  second_university <- course_dataset %>%
+    select(University.2,
+           starts_with(paste0(questions_uni[2], x)))
+  third_university <- course_dataset %>%
+    select(University.3,
+           starts_with(paste0(questions_uni[3], x)))
+  fourth_university <- course_dataset %>%
+    select(University.4,
+           starts_with(paste0(questions_uni[4], x)))
+  
+  #since questions are always the same, binding four datasets together
+  z <- rbind(first_university, 
+             setNames(second_university, names(first_university)),
+             setNames(third_university, names(first_university)),
+             setNames(fourth_university, names(first_university)))
+  
+  names(z) <- gsub("the.first", "this", names(z)) #substituting "the.first" to "this" to make it gramatically correct
+  z <- z[!is.na(z$University.1),] #removing empty lines
+  
+  #finding out names of universities with 10 or more respondents
+  university_names <- z %>%
+    select(University.1) %>%
+    group_by(University.1) %>%
+    summarise(respondents = n()) %>%
+    filter(respondents >= 10)
+  
+  #returning only rows with 10 or more respondents 
+  z <- z[z$University.1 %in% as.character(university_names$University.1),]
+  return(z)
+}
+
+universityprint <- function(x, course_dataset){
+  #function to print out information about specific university
+  #x = name of the question to print out
+  #course_dataset = dataset containing information about one course
+  
+  #preparing data to have only universities with at least 10 answers
+  z <- prepare_university(x, course_dataset)
+  
+  #checking if there are any university to print out
+  if (length(as.character(unique(z$University.1))) > 0) {
+    #sorting university names alphabetically
+    university_names <- sort(as.character(unique(z$University.1)))
+    
+    for(i in seq_along(university_names)){
+      slice <- z[z$University.1 == university_names[i], ]
+      figheight <- figure_height(x, slice) #calculating height of a figure to print out
+      .q <- questionprint(x, slice, save = FALSE, name_of_the_question = paste0(" (n = ", nrow(slice), ")")) #preparing the plot
+
+      #workaround to have next step. Chooses a random number from 1 to 1 million to have as a name of a chunk. Otherwise knitr throws an error since there are chunks with the same name
+      cap <- sample(1:1e6, 1)
+      
+      if(!is.null(.q)){
+        university_name <- paste0("\n###", university_names[i], "\n\n")
+        kexpand(.q, figheight, cap, university_name)
+      }
+    }
+  }
+}
+
+kexpand <- function(.q, figheight, cap, university_name){
+  #function to dynamically update figheight inside of the loop
+  
+  cat(knit(
+    text=knit_expand(text=
+                    "```{r-{{cap}}, echo=FALSE, fig.height={{figheight}}}\n cat(university_name)\n .q\n```\n"
+    )
+  ))
+}
+
+cbind.fill <- function(...){
+  #http://stackoverflow.com/questions/7962267/cbind-a-df-with-an-empty-df-cbind-fill
+  nm <- list(...) 
+  nm <- lapply(nm, as.matrix)
+  n <- max(sapply(nm, nrow)) 
+  do.call(cbind, lapply(nm, function (x) 
+    rbind(x, matrix(, n-nrow(x), ncol(x))))) 
 }

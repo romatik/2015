@@ -46,6 +46,7 @@ library(RColorBrewer)
 library(xtable)
 library(tidyr)
 options(xtable.comment = FALSE)
+opts_knit$set(progress = F, verbose = F)
 knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, results = 'asis')
 ```
 
@@ -55,22 +56,23 @@ knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, results = 'asis'
 
 ```{r}
 z <- c("C.3.Please.rate.academic.satisfaction.with.EM.course._", 
-       "C.4.Please.rate.overall.satisfaction.with.EM.course._",
-       "N.5.1.Please.rate.overall.satisfaction.at.the.first.university._",
-       "O.5.1.Please.rate.overall.satisfaction.at.the.second.university._",
-       "P.5.1.Please.rate.overall.satisfaction.at.the.third.university._",
-       "Q.5.1.Please.rate.overall.satisfaction.at.the.fourth.university._")
+       "C.4.Please.rate.overall.satisfaction.with.EM.course._")
 question <- course_dataset[, z]
+names(question) <- c("Overall academic satisfaction", 
+                     "Overall satisfaction")
+
+individual_universities <- prepare_university("N.5.1", course_dataset)
+
+for(i in seq_along(as.character(unique(individual_universities$University.1)))) {
+  temp <- individual_universities[individual_universities$University.1 == as.character(unique(individual_universities$University.1))[i],]
+  names(temp)<- c("University.1", as.character(unique(individual_universities$University.1))[i])
+  temp$University.1 <- NULL
+  question <- as.data.frame(cbind.fill(question, temp))
+}
 for(i in seq_along(question)) {
   ### this step will also reduce all other answers to NA's
   question[,i] <- factor(question[,i], levels = likert_levels)
 }
-names(question) <- c("Overall academic satisfaction", 
-                     "Overall satisfaction",
-                     "Overall satisfaction in 1st university",
-                     "Overall satisfaction in 2nd university",
-                     "Overall satisfaction in 3rd university",
-                     "Overall satisfaction in 4th university")
 question <- question[, colSums(!is.na(question)) >= 10]
 ```
 ```{r, fig.height = 1 + 0.4*ncol(question)}
@@ -137,17 +139,7 @@ We will have some text here.
 report_question("B.1.1", course_dataset)
 ```
 ```{r, fig.height = figure_height("N.1.1", course_dataset)}
-report_question("N.1.1", course_dataset)
-```
-```{r, fig.height = figure_height("O.1.1", course_dataset)}
-report_question("O.1.1", course_dataset)
-```
-```{r, fig.height = figure_height("P.1.1", course_dataset)}
-report_question("P.1.1", course_dataset)
-```
-```{r, fig.height = figure_height("Q.1.1", course_dataset)}
-report_question("Q.1.1", course_dataset)
-
+universityprint("N.1.1", course_dataset)
 ```
 
 ##Support received during the orientaion program
@@ -156,16 +148,7 @@ report_question("Q.1.1", course_dataset)
 report_question("B.1.3", course_dataset)
 ```
 ```{r, fig.height = figure_height("N.1.3", course_dataset)}
-report_question("N.1.3", course_dataset)
-```
-```{r, fig.height = figure_height("O.1.3", course_dataset)}
-report_question("O.1.3", course_dataset)
-```
-```{r, fig.height = figure_height("P.1.3", course_dataset)}
-report_question("P.1.3", course_dataset)
-```
-```{r, fig.height = figure_height("Q.1.3", course_dataset)}
-report_question("Q.1.3", course_dataset)
+universityprint("N.1.3", course_dataset)
 ```
 
 ##Helpfulness of units and people
@@ -174,16 +157,7 @@ report_question("Q.1.3", course_dataset)
 report_question("B.2.1", course_dataset)
 ```
 ```{r, fig.height = figure_height("N.2.1", course_dataset)}
-report_question("N.2.1", course_dataset)
-```
-```{r, fig.height = figure_height("O.2.1", course_dataset)}
-report_question("O.2.1", course_dataset)
-```
-```{r, fig.height = figure_height("P.2.1", course_dataset)}
-report_question("P.2.1", course_dataset)
-```
-```{r, fig.height = figure_height("Q.2.1", course_dataset)}
-report_question("Q.2.1", course_dataset)
+universityprint("N.2.1", course_dataset)
 ```
 
 ##Support received on various issues
@@ -192,16 +166,7 @@ report_question("Q.2.1", course_dataset)
 report_question("B.2.2", course_dataset)
 ```
 ```{r, fig.height = figure_height("N.2.2", course_dataset)}
-report_question("N.2.2", course_dataset)
-```
-```{r, fig.height = figure_height("O.2.2", course_dataset)}
-report_question("O.2.2", course_dataset)
-```
-```{r, fig.height = figure_height("P.2.2", course_dataset)}
-report_question("P.2.2", course_dataset)
-```
-```{r, fig.height = figure_height("Q.2.2", course_dataset)}
-report_question("Q.2.2", course_dataset)
+universityprint("N.2.2", course_dataset)
 ```
 
 \pagebreak
@@ -216,16 +181,7 @@ report_question("C.1", course_dataset)
 ```
 
 ```{r, fig.height = figure_height("N.3.1", course_dataset)}
-report_question("N.3.1", course_dataset)
-```
-```{r, fig.height = figure_height("O.3.1", course_dataset)}
-report_question("O.3.1", course_dataset)
-```
-```{r, fig.height = figure_height("P.3.1", course_dataset)}
-report_question("P.3.1", course_dataset)
-```
-```{r, fig.height = figure_height("Q.3.1", course_dataset)}
-report_question("Q.3.1", course_dataset)
+universityprint("N.3.1", course_dataset)
 ```
 
 \pagebreak
@@ -243,16 +199,7 @@ report_question("L.5", course_dataset)
 ##Teaching/learning
 
 ```{r, fig.height = figure_height("N.4.1", course_dataset)}
-report_question("N.4.1", course_dataset)
-```
-```{r, fig.height = figure_height("O.4.1", course_dataset)}
-report_question("O.4.1", course_dataset)
-```
-```{r, fig.height = figure_height("P.4.1", course_dataset)}
-report_question("P.4.1", course_dataset)
-```
-```{r, fig.height = figure_height("Q.4.1", course_dataset)}
-report_question("Q.4.1", course_dataset)
+universityprint("N.4.1", course_dataset)
 ```
 
 \pagebreak

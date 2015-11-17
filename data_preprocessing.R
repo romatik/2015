@@ -347,10 +347,48 @@ bigtable_temp <- bigtable
 
 bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course. <- gsub("GEMMA-Master`s Degree in Women`s and Gender Studies", "GEMMA-Master's Degree in Women's and Gender Studies", bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course.)
 bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course. <- gsub("CEMACUBE-Common European Master`s Course in Biomedical Engineering", "CEMACUBE-Common European Master's Course in Biomedical Engineering", bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course.)
-bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course. <- gsub("IMQP-International Master in Quaternary and Prehistory Master International en Quaternaire et PrÃfÂfÃ,Â©histoire", "IMQP-International Master in Quaternary and Prehistory, Master International en Quaternaire et Prehistoire", bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course.)
-bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course. <- gsub("MITRA-MÃfÂfÃ,Â©diation interculturelle: identitÃfÂfÃ,Â©s, mobilitÃfÂfÃ,Â©s, conflits", "MITRA-Mediation interculturelle: identites, mobilites, conflits", bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course.)
-bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course. <- gsub("AFEPA-European MasterÃfÂ¢Ã,Â???Ã,ÂTs programme in Agricultural, Food and Environmental Policy Analysis ", "AFEPA-European Master's programme in Agricultural, Food and Environmental Policy Analysis", bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course.)
+bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course. <- gsub("IMQP-International Master in Quaternary and Prehistory Master International en Quaternaire et Pr?f?f?,Â©histoire", "IMQP-International Master in Quaternary and Prehistory, Master International en Quaternaire et Prehistoire", bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course.)
+bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course. <- gsub("MITRA-M?f?f?,Â©diation interculturelle: identit?f?f?,Â©s, mobilit?f?f?,Â©s, conflits", "MITRA-Mediation interculturelle: identites, mobilites, conflits", bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course.)
+bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course. <- gsub("AFEPA-European Master?fÂ¢?,?????,?Ts programme in Agricultural, Food and Environmental Policy Analysis ", "AFEPA-European Master's programme in Agricultural, Food and Environmental Policy Analysis", bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course.)
 bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course. <- gsub("EMARO+-European Master on Advanced Robotics +", "EMARO - European Master on Advanced Robotics", bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course.)
 bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course. <- gsub("MUNDUS JOURNALISM\t-Erasmus Mundus Masters Journalism, Media and Globalisation", "MUNDUS JOURNALISM - Erasmus Mundus Masters Journalism, Media and Globalisation", bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course.)
 
 write.csv(x = bigtable_temp, file = "bigtable.csv") #"2015-11-05 16:25:32 CET"
+
+#######################################################################################
+### cleaning up names of universities
+### file from google docs
+#university_names <- read.csv("C:/Users/Misha/Downloads/University names - Sheet1.csv")
+
+z <- university_names %>%
+  select(A.2.name.of.Erasmus.Mundus.master.course., University.1, University.2, University.3, University.4)%>%
+  melt(na.rm = TRUE, id = "A.2.name.of.Erasmus.Mundus.master.course.") %>%
+  group_by(A.2.name.of.Erasmus.Mundus.master.course.) %>%
+  distinct(value)
+write.csv(z, "second_sheet.csv") #shared online at "University names"
+
+### checking if everything stayed the same
+tenormore <- university_names %>%
+  select(A.2.name.of.Erasmus.Mundus.master.course.) %>%
+  group_by(A.2.name.of.Erasmus.Mundus.master.course.) %>%
+  summarise(respondents = n()) %>%
+  filter(respondents >= 10)
+colnames(tenormore) <- c("Course", "Respondents")
+
+university_names <- university_names[(university_names$A.2.name.of.Erasmus.Mundus.master.course. %in% tenormore$Course),]
+
+#######################################################################################
+### merging 
+bigtable <- read.csv("../Media/2015/Master_tables/bigtable.csv", na.strings = c("", " ", "No answer", "N/A", "NA"), header = TRUE)
+bigtable$X <- NULL
+bigtable_temp <- bigtable
+bigtable_temp$University.1 <- NULL
+bigtable_temp$University.2 <- NULL
+bigtable_temp$University.3 <- NULL
+bigtable_temp$University.4 <- NULL
+
+university_names$A.2.name.of.Erasmus.Mundus.master.course. <- NULL
+
+bigtable_temp <- left_join(x = bigtable_temp, y = university_names, by = "RespondentID_")
+
+write.csv(x = bigtable_temp, file = "bigtable.csv") #"2015-11-15 22:45:04 CET"

@@ -16,6 +16,8 @@ source("functions.R")
 
 dataset <- read.csv("../Media/2015/Master_tables/bigtable.csv", na.strings = c("", " ", "No answer", "N/A", "NA"), header = TRUE)
 dataset$X <- NULL
+names(dataset) <- gsub("Consistency.of.moduleÃƒ..s.assessment.across.universities", "Consistency.of.module's.assessment.across.universities", names(dataset))
+names(dataset) <- gsub("Formalised.system.offered.by.the.university.consortium.through.which.students.can.share.their.opinions.and.provide.feedback.on.the.EM.course", "Formalised.system.by.university.consortium.for.students.to.share.opinions.and.feedback.on.course", names(dataset))
 
 ### ordered levels that were used in the survey
 likert_levels <- c("Very unsatisfied", "Somewhat unsatisfied", "Somewhat satisfied", "Very satisfied")
@@ -50,3 +52,10 @@ for (i in seq_along(1:2)){
                     output_dir = './Reports/courses')
   #embed_fonts(paste("report_", as.character(tenormore$Course[i]), '_', Sys.Date(), ".pdf", sep=''))
 }
+
+
+#####################################################################
+### for the second phase of the application process
+rmarkdown::render('./Reports/second_phase.Rmd',
+                  output_format = "pdf_document",
+                  output_file =  paste("second_phase.pdf", sep=''))

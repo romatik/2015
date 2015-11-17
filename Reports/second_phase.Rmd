@@ -1,0 +1,74 @@
+---
+title: "Second phase of application process"
+author: "Course Quality Advisory Board"
+date: "November 10, 2015"
+output: pdf_document
+header-includes:
+    - \usepackage{colortbl, xcolor, titling, fancyhdr}
+    - \setlength{\tabcolsep}{3pt}
+    - \definecolor{table-hl}{RGB}{90, 180, 172}
+---
+
+```{r, echo = FALSE}
+#headers - http://tex.stackexchange.com/questions/139139/adding-headers-and-footers-using-pandoc
+suppressWarnings(suppressPackageStartupMessages(library(ggplot2)))
+suppressWarnings(suppressPackageStartupMessages(library(dplyr)))
+suppressWarnings(suppressPackageStartupMessages(library(likert)))
+suppressWarnings(suppressPackageStartupMessages(library(stringr)))
+suppressWarnings(suppressPackageStartupMessages(library(scales)))
+suppressWarnings(suppressPackageStartupMessages(library(psych)))
+suppressWarnings(suppressPackageStartupMessages(library(grid)))
+suppressWarnings(suppressPackageStartupMessages(library(RColorBrewer)))
+suppressWarnings(suppressPackageStartupMessages(library(xtable)))
+suppressWarnings(suppressPackageStartupMessages(library(tidyr)))
+
+library(knitr)
+library(markdown)
+library(rmarkdown)
+library(dplyr)
+library(likert)
+library(scales)
+library(psych)
+library(reshape)
+library(grid)
+library(RColorBrewer)
+library(xtable)
+library(tidyr)
+options(xtable.comment = FALSE)
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, results = 'asis')
+```
+Following exercises are designed to test critical competencies that you will need in your work as a quantitative analyst in CQAB. Send your work to cqab.chair@em-a.eu with the title "CQAB Quantitative data analyst [First Name Last Name]" by **19th of November**. Good luck!
+
+#1. Code comprehension
+Function was written in R statistical package. Briefly explain what this function does. Feel free to include your comments on how you would have written this function differently. This can be both high-level description of function logic or actual code in R.
+```{r, echo = TRUE}
+extract_name <- function(x){
+  question <- dataset[, substr(names(dataset), 1, nchar(x)) == x]
+  name_of_the_question <- gsub("(.*)_(.*)", "\\1", colnames(question)[1]) 
+  name_of_the_question <- substring(name_of_the_question, nchar(x)+1)
+  name_of_the_question <- gsub("\\.", " ", name_of_the_question)
+  
+  return(name_of_the_question)
+}
+```
+
+#2. Data analysis
+Following graphs will be printed in forthcoming individual reports for each EM course with 10 or more respondents. Briefly describe the results on graphs and tables. Keep in mind that those reports are mostly designed for course administrators, so make your description relevant to that target group.
+```{r, fig.height = figure_height("B.1.1", course_dataset)}
+report_question("B.1.1", course_dataset)
+```
+```{r, fig.height = figure_height("N.1.1", course_dataset)}
+report_question("N.1.1", course_dataset)
+```
+```{r, fig.height = figure_height("O.1.1", course_dataset)}
+report_question("O.1.1", course_dataset)
+```
+```{r, fig.height = figure_height("P.1.1", course_dataset)}
+report_question("P.1.1", course_dataset)
+```
+```{r, fig.height = figure_height("Q.1.1", course_dataset)}
+report_question("Q.1.1", course_dataset)
+
+```
+
+Thank you for your time!
