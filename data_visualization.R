@@ -16,7 +16,6 @@ setwd("C:/Users/Misha/Dropbox/Projects/EM Internship/Quantitative team/2015")
 source("functions.R")
 dataset <- read.csv("../Media/2015/Master_tables/bigtable.csv", na.strings = c("", " ", "No answer", "N/A", "NA", "Other (please specify)"), header = TRUE)
 dataset$X <- NULL
-dataset$B.2.2.Rate.the.support.received.on.the.following.issues._Inappropriate.conduct.or.sexual.harassment.issues <- NULL
 dataset$B.2.2.a.If.you.feel.comfortable.describe.any.inappropriate.conduct.or.sexual.harassment.issues.you.have.witnessed.or.have.been.the.subject.of.and.the.support.you.have.received.The.answers.to.this.question.will.not.be.shared.with.Erasmus.Mundus.course._Open.Ended.Response <- NULL
 
 ### ordered levels that were used in the survey

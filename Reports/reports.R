@@ -1,23 +1,22 @@
+library(plyr)
 library(dplyr)
 library(likert)
 library(scales)
-library(psych)
 library(reshape)
 library(grid)
 library(RColorBrewer)
+library(extrafont)
 
 #http://blog.revolutionanalytics.com/2012/09/how-to-use-your-favorite-fonts-in-r-charts.html
-library(extrafont)
 loadfonts()
 Sys.setenv(R_GSCMD = "C:/Program Files/gs/gs9.16/bin/gswin64c.exe")
 
 setwd("C:/Users/Misha/Dropbox/Projects/EM Internship/Quantitative team/2015")
 source("functions.R")
+text_data <- read.csv("./Reports/text_data.csv", encoding = "UTF-8")
 
 dataset <- read.csv("../Media/2015/Master_tables/bigtable.csv", na.strings = c("", " ", "No answer", "N/A", "NA"), header = TRUE)
 dataset$X <- NULL
-names(dataset) <- gsub("Consistency.of.moduleÃƒ..s.assessment.across.universities", "Consistency.of.module's.assessment.across.universities", names(dataset))
-names(dataset) <- gsub("Formalised.system.offered.by.the.university.consortium.through.which.students.can.share.their.opinions.and.provide.feedback.on.the.EM.course", "Formalised.system.by.university.consortium.for.students.to.share.opinions.and.feedback.on.course", names(dataset))
 
 ### ordered levels that were used in the survey
 likert_levels <- c("Very unsatisfied", "Somewhat unsatisfied", "Somewhat satisfied", "Very satisfied")
@@ -43,8 +42,9 @@ colnames(tenormore) <- c("Course", "Respondents")
 source("functions.R")
 today_date <- as.character(format(Sys.Date(), "%d %b %Y"))
 #http://reed.edu/data-at-reed/software/R/markdown_multiple_reports.html
-for (i in seq_along(1:2)){
-  course_dataset <- dataset[dataset$A.2.name.of.Erasmus.Mundus.master.course. == tenormore$Course[i],] 
+for (i in 3:22){
+  course_dataset <- dataset[dataset$A.2.name.of.Erasmus.Mundus.master.course. == tenormore$Course[i],]
+  text_dataset <- text_data[text_data$Course == tenormore$Course[i],]
 
   rmarkdown::render('./Reports/report_script.Rmd',  # file 2
                     output_format = "pdf_document",

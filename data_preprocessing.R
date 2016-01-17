@@ -392,3 +392,31 @@ university_names$A.2.name.of.Erasmus.Mundus.master.course. <- NULL
 bigtable_temp <- left_join(x = bigtable_temp, y = university_names, by = "RespondentID_")
 
 write.csv(x = bigtable_temp, file = "bigtable.csv") #"2015-11-15 22:45:04 CET"
+
+#######################################################################################
+### cleaning typos and other things in a master table
+
+bigtable <- read.csv("../Media/2015/Master_tables/bigtable.csv", na.strings = c("", " ", "No answer", "N/A", "NA"), header = TRUE)
+bigtable$X <- NULL
+bigtable_temp <- bigtable
+names(bigtable_temp) <- gsub("C.1.Rate.the.following.items._Consistency.of.moduleÃƒ..s.assessment.across.universities", "C.1.Rate.the.following.items._Consistency.of.module's.assessment.across.universities", names(bigtable_temp))
+names(bigtable_temp) <- gsub("Formalised.system.offered.by.the.university.consortium.through.which.students.can.share.their.opinions.and.provide.feedback.on.the.EM.course", "Formalised.system.by.university.consortium.for.students.to.share.opinions.and.feedback.on.course", names(bigtable_temp))
+names(bigtable_temp) <- gsub("L.2.a.Rate.the.following.statements.about.internship._Overall.quality.of.the.internship_2", "L.2.a.Rate.the.following.statements.about.internship._Overall.quality.of.the.internship", names(bigtable_temp))
+names(bigtable_temp) <- gsub("Health.Insurance", ("Health.insurance"), names(bigtable_temp))
+
+bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course. <- gsub("&", "and", bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course.)
+bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course. <- gsub(":", ".", bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course.)
+
+#### need to find out about L.3.a.Rate.the.following.statements.about.field.experience._Overall.quality.of.field.experience_2 
+# field_experience <- bigtable_temp %>%
+#   select(RespondentID_, 
+#          L.3.a.Rate.the.following.statements.about.field.experience._Overall.quality.of.field.experience_2,
+#          L.3.a.Rate.the.following.statements.about.field.experience._Overall.quality.of.field.experience) %>%
+#   melt(id = "RespondentID_")
+# 
+# field_experience$variable <- "L.3.a.Rate.the.following.statements.about.field.experience._Overall.quality.of.field.experience"
+# sum(!is.na(field_experience$value)) #376
+# 
+# field_experience_cast <- reshape(field_experience, direction = "wide", idvar = "RespondentID_", timevar = "variable")
+# sum(!is.na(field_experience_cast$value.L.3.a.Rate.the.following.statements.about.field.experience._Overall.quality.of.field.experience)) #200
+write.csv(x = bigtable_temp, file = "bigtable.csv") #"2016-01-17 17:34:08 MSK"

@@ -136,16 +136,16 @@ We will have some text here.
 ##Support received before the start of the Erasmus Mundus course
 
 ```{r, fig.height = figure_height("B.1.1", course_dataset)}
-report_question("B.1.1", course_dataset)
+report_question("B.1.1", course_dataset, text_dataset[,5])
 ```
 ```{r, fig.height = figure_height("N.1.1", course_dataset)}
 universityprint("N.1.1", course_dataset)
 ```
 
-##Support received during the orientaion program
+##Support received during the orientation program
 
 ```{r, fig.height = figure_height("B.1.3", course_dataset)}
-report_question("B.1.3", course_dataset)
+report_question("B.1.3", course_dataset, text_dataset[,6])
 ```
 ```{r, fig.height = figure_height("N.1.3", course_dataset)}
 universityprint("N.1.3", course_dataset)
@@ -154,7 +154,7 @@ universityprint("N.1.3", course_dataset)
 ##Helpfulness of units and people
 
 ```{r, fig.height = figure_height("B.2.1", course_dataset)}
-report_question("B.2.1", course_dataset)
+report_question("B.2.1", course_dataset, text_dataset[,7])
 ```
 ```{r, fig.height = figure_height("N.2.1", course_dataset)}
 universityprint("N.2.1", course_dataset)
@@ -163,7 +163,7 @@ universityprint("N.2.1", course_dataset)
 ##Support received on various issues
 
 ```{r, fig.height = figure_height("B.2.2", course_dataset)}
-report_question("B.2.2", course_dataset)
+report_question("B.2.2", course_dataset, text_dataset[,8])
 ```
 ```{r, fig.height = figure_height("N.2.2", course_dataset)}
 universityprint("N.2.2", course_dataset)
@@ -177,7 +177,7 @@ We will have some text here.
 ##Module assessment
 
 ```{r, fig.height = figure_height("C.1", course_dataset)}
-report_question("C.1", course_dataset)
+report_question("C.1", course_dataset, text_dataset[,9])
 ```
 
 ```{r, fig.height = figure_height("N.3.1", course_dataset)}
@@ -189,17 +189,18 @@ universityprint("N.3.1", course_dataset)
 #Teaching/learning and supervision
 We will have some text here.
 
-```{r, fig.height = figure_height("L.4", course_dataset)}
-report_question("L.4", course_dataset)
-```
-```{r, fig.height = figure_height("L.5", course_dataset)}
-report_question("L.5", course_dataset)
-```
 
 ##Teaching/learning
 
 ```{r, fig.height = figure_height("N.4.1", course_dataset)}
+cat(sprintf("\n%s\n", text_dataset[,10]))
 universityprint("N.4.1", course_dataset)
+```
+```{r, fig.height = figure_height("L.4", course_dataset)}
+report_question("L.4", course_dataset, text_dataset[,11])
+```
+```{r, fig.height = figure_height("L.5", course_dataset)}
+report_question("L.5", course_datasettext_dataset[,12])
 ```
 
 \pagebreak
@@ -207,14 +208,14 @@ universityprint("N.4.1", course_dataset)
 #Internship/field experience and personal development
 We will have some text here.
 
-```{r, fig.height = figure_height("L.2.a", course_dataset)}
-report_question("L.2.a", course_dataset)
+```{r, fig.height = figure_height("L.6", course_dataset)}
+report_question("L.6", course_dataset, text_dataset[,13])
 ```
 ```{r, fig.height = figure_height("L.3.a", course_dataset)}
-report_question("L.3.a", course_dataset)
+report_question("L.3.a", course_dataset, text_dataset[,14])
 ```
-```{r, fig.height = figure_height("L.6", course_dataset)}
-report_question("L.6", course_dataset)
+```{r, fig.height = figure_height("L.2.a", course_dataset)}
+report_question("L.2.a", course_dataset, text_dataset[,15])
 ```
 
 \pagebreak

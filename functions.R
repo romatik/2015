@@ -2,6 +2,9 @@
 # function calculates the mean only if there are 10 or more respondents to each individual question
 f1 <- function(x) if(sum(!is.na(x)) >= 10) mean(as.numeric(x), na.rm=TRUE) else NA_real_
 
+#function calculates number of respondents (not NA)
+f2 <- function(x) sum(!is.na(x))
+
 questionprint <- function(x, dataset = overall, save = TRUE, name_of_the_question = NULL){
   ### function for printing out the likert plot about each individual section of a survey. It also prints out information about 
   ### Cronbach's alpha level. Can be used further to create similar plots for each individual course.
@@ -135,9 +138,9 @@ comparative_df <- function(x, course_dataset){
 
   #calculating means for a specific course
   means_question <- question_dataset %>% 
-    summarise_each(funs(f1, n())) %>%
+    summarise_each(funs(f1, f2)) %>%
     gather(variable, value) %>%
-    separate(variable, c("var", "stat"), sep = "\\_") %>%
+    separate(variable, c("var", "stat"), sep = "\\_f") %>%
     spread(var, value)%>%
     t() %>%
     as.data.frame()
@@ -291,7 +294,7 @@ heatmap_printing <- function(means, vector, scaled = TRUE, saved = TRUE){
   } else {print(p)}
 }
 
-report_question <- function(question, course_dataset){
+report_question <- function(question, course_dataset, text_data = NULL){
   ## Function to print out the question in the individual report.
   
   ## question = string, containing the question to be printed.
@@ -365,10 +368,10 @@ report_question <- function(question, course_dataset){
   try_flag <- tryCatch(comparative_df(question, course_dataset), error = function(err) return(TRUE)) 
   
   if(!is.logical(try_flag)){ #checking if try_flag is logical. If it is, then do nothing. Otherwise print out the information about the question.
-    temp <- sprintf("\n%s%s%s\n\n", first_heading, "Question:", question)
-    cat(temp)
+    cat(sprintf("\n%s\n", text_data))
+    
+    cat(sprintf("\n%s\n\n", first_heading))
     #cat(intro_text)
-    cat("\n")
     
     #prtinting out the question
     print(questionprint(question, dataset = course_dataset, save = FALSE))
@@ -543,7 +546,7 @@ kexpand <- function(.q, figheight, cap, university_name){
   
   cat(knit(
     text=knit_expand(text=
-                    "```{r-{{cap}}, echo=FALSE, fig.height={{figheight}}}\n cat(university_name)\n .q\n```\n"
+                    "```{r-{{cap}}, echo=FALSE, message = FALSE, warning = FALSE}\n cat(university_name)\n .q\n```\n"
     )
   ))
 }
