@@ -1,19 +1,3 @@
-library(likert)
-library(scales)
-library(psych)
-library(reshape)
-library(grid)
-library(RColorBrewer)
-library(dplyr)
-
-dataset <- read.csv("../Media/2015/Master_tables/bigtable.csv", na.strings = c("", " ", "No answer", "N/A", "NA"), header = TRUE)
-dataset$X <- NULL
-dataset$B.2.2.a.If.you.feel.comfortable.describe.any.inappropriate.conduct.or.sexual.harassment.issues.you.have.witnessed.or.have.been.the.subject.of.and.the.support.you.have.received.The.answers.to.this.question.will.not.be.shared.with.Erasmus.Mundus.course._Open.Ended.Response <- NULL
-
-### ordered levels that were used in the survey
-likert_levels <- c("Very unsatisfied", "Somewhat unsatisfied", "Somewhat satisfied", "Very satisfied")
-agree_levels <- c("Disagree", "Somewhat disagree", "Somewhat agree", "Agree")
-
 z <- dataset %>%
   dplyr::select(starts_with("B.1.1"),
          starts_with("B.1.3"),
@@ -101,3 +85,20 @@ means_matrix <- means_matrix[complete.cases(means_matrix),]
 out <- cocluster(means_matrix, datatype = "continuous", nbcocluster = c(4,2))
 plot(out)
 summary(out)
+
+#########################################################################################################################################
+library(caTools)
+set.seed(3000)
+spl <- sample.split(dataset$B.1.2.Rate.the.orientation.welcoming.program.provided.upon.arrival._, SplitRatio = 0.7)
+welcoming <- dataset %>%
+  select(B.1.2.Rate.the.orientation.welcoming.program.provided.upon.arrival._,
+         starts_with("B.1.3"))
+train <- subset(welcoming, spl == TRUE)
+test <- subset(welcoming, spl != TRUE)
+
+library(rpart)
+library(rpart.plot)
+stevenstree <- rpart(B.1.2.Rate.the.orientation.welcoming.program.provided.upon.arrival._ ~ ., data = welcoming, method = "class", minbucket = 25)
+prp(stevenstree)
+predictcart <- predict(stevenstree, newdata = test, type = "class")
+table(test$B.1.2.Rate.the.orientation.welcoming.program.provided.upon.arrival._, predictcart)

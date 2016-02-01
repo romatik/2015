@@ -420,3 +420,53 @@ bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course. <- gsub(":", ".", bigtab
 # field_experience_cast <- reshape(field_experience, direction = "wide", idvar = "RespondentID_", timevar = "variable")
 # sum(!is.na(field_experience_cast$value.L.3.a.Rate.the.following.statements.about.field.experience._Overall.quality.of.field.experience)) #200
 write.csv(x = bigtable_temp, file = "bigtable.csv") #"2016-01-17 17:34:08 MSK"
+
+
+#######################################################################################
+### making names of universities consistent
+bigtable <- read.csv("../Media/2015/Master_tables/bigtable.csv", na.strings = c("", " ", "No answer", "N/A", "NA"), header = TRUE)
+bigtable$X <- NULL
+bigtable_temp <- bigtable
+
+#gsub("University of Leuven, Belgium", "Catholic University of Leuven, Belgium")
+bigtable_temp$University.1 <- gsub("National Polytechnic Institute of Lorraine, France", "University of Lorraine, France", bigtable_temp$University.1)
+bigtable_temp$University.2 <- gsub("National Polytechnic Institute of Lorraine, France", "University of Lorraine, France", bigtable_temp$University.2)
+bigtable_temp$University.3 <- gsub("National Polytechnic Institute of Lorraine, France", "University of Lorraine, France", bigtable_temp$University.3)
+bigtable_temp$University.4 <- gsub("National Polytechnic Institute of Lorraine, France", "University of Lorraine, France", bigtable_temp$University.4)
+
+bigtable_temp$University.1 <- gsub("Institute of Santarem, Portugal", "Polytechnic Institute of Santarem, Portugal", bigtable_temp$University.1)
+bigtable_temp$University.2 <- gsub("Institute of Santarem, Portugal", "Polytechnic Institute of Santarem, Portugal", bigtable_temp$University.2)
+bigtable_temp$University.3 <- gsub("Institute of Santarem, Portugal", "Polytechnic Institute of Santarem, Portugal", bigtable_temp$University.3)
+bigtable_temp$University.4 <- gsub("Institute of Santarem, Portugal", "Polytechnic Institute of Santarem, Portugal", bigtable_temp$University.4)
+
+bigtable_temp$University.1 <- gsub("Technische Universitat Berlin, Germany", "Technical University of Berlin, Germany", bigtable_temp$University.1)
+bigtable_temp$University.2 <- gsub("Technische Universitat Berlin, Germany", "Technical University of Berlin, Germany", bigtable_temp$University.2)
+bigtable_temp$University.3 <- gsub("Technische Universitat Berlin, Germany", "Technical University of Berlin, Germany", bigtable_temp$University.3)
+bigtable_temp$University.4 <- gsub("Technische Universitat Berlin, Germany", "Technical University of Berlin, Germany", bigtable_temp$University.4)
+
+bigtable_temp$University.1 <- gsub("Universita degli Studi Palermo, Italy", "University of Palermo, Italy", bigtable_temp$University.1)
+bigtable_temp$University.2 <- gsub("Universita degli Studi Palermo, Italy", "University of Palermo, Italy", bigtable_temp$University.2)
+bigtable_temp$University.3 <- gsub("Universita degli Studi Palermo, Italy", "University of Palermo, Italy", bigtable_temp$University.3)
+bigtable_temp$University.4 <- gsub("Universita degli Studi Palermo, Italy", "University of Palermo, Italy", bigtable_temp$University.4)
+
+bigtable_temp$University.1 <- gsub("Vu University Amsterdam, Netherlands", "VU University Amsterdam, Netherlands", bigtable_temp$University.1)
+bigtable_temp$University.2 <- gsub("Vu University Amsterdam, Netherlands", "VU University Amsterdam, Netherlands", bigtable_temp$University.2)
+bigtable_temp$University.3 <- gsub("Vu University Amsterdam, Netherlands", "VU University Amsterdam, Netherlands", bigtable_temp$University.3)
+bigtable_temp$University.4 <- gsub("Vu University Amsterdam, Netherlands", "VU University Amsterdam, Netherlands", bigtable_temp$University.4)
+
+bigtable_temp$University.1 <- gsub("Universidade Catolica Portuguesa, Portugal", "Portuguese Catholic University, Portugal", bigtable_temp$University.1)
+bigtable_temp$University.2 <- gsub("Universidade Catolica Portuguesa, Portugal", "Portuguese Catholic University, Portugal", bigtable_temp$University.2)
+bigtable_temp$University.3 <- gsub("Universidade Catolica Portuguesa, Portugal", "Portuguese Catholic University, Portugal", bigtable_temp$University.3)
+bigtable_temp$University.4 <- gsub("Universidade Catolica Portuguesa, Portugal", "Portuguese Catholic University, Portugal", bigtable_temp$University.4)
+
+bigtable_temp$University.1 <- gsub("Instituto Superior Tecnico (IST) Lisbon, Portugal", "Technical University of Lisbon, Portugal", bigtable_temp$University.1)
+bigtable_temp$University.2 <- gsub("Instituto Superior Tecnico (IST) Lisbon, Portugal", "Technical University of Lisbon, Portugal", bigtable_temp$University.2)
+bigtable_temp$University.3 <- gsub("Instituto Superior Tecnico (IST) Lisbon, Portugal", "Technical University of Lisbon, Portugal", bigtable_temp$University.3)
+bigtable_temp$University.4 <- gsub("Instituto Superior Tecnico (IST) Lisbon, Portugal", "Technical University of Lisbon, Portugal", bigtable_temp$University.4)
+
+bigtable_temp$University.1 <- gsub("Ecole polytechnique federale de Lausanne, Switzerland", "Swiss Federal Institute of Technology Lausanne, Switzerland", bigtable_temp$University.1)
+bigtable_temp$University.2 <- gsub("Ecole polytechnique federale de Lausanne, Switzerland", "Swiss Federal Institute of Technology Lausanne, Switzerland", bigtable_temp$University.2)
+bigtable_temp$University.3 <- gsub("Ecole polytechnique federale de Lausanne, Switzerland", "Swiss Federal Institute of Technology Lausanne, Switzerland", bigtable_temp$University.3)
+bigtable_temp$University.4 <- gsub("Ecole polytechnique federale de Lausanne, Switzerland", "Swiss Federal Institute of Technology Lausanne, Switzerland", bigtable_temp$University.4)
+
+write.csv(x = bigtable_temp, file = "bigtable.csv") #"2016-01-23 18:21:39 MSK"

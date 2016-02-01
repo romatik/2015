@@ -221,4 +221,6 @@ report_question("L.2.a", course_dataset, text_dataset[,15])
 \pagebreak
 
 #Acknowledgments
-Some concluding remarks
+
+*Primary analyst*: `r as.character(text_dataset[,2])`
+*Secondary analyst*: `r as.character(text_dataset[,3])`

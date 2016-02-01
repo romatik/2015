@@ -1,3 +1,61 @@
+library(dplyr)
+library(likert)
+library(scales)
+library(psych)
+library(reshape)
+library(grid)
+library(RColorBrewer)
+library(tidyr)
+library(rworldmap)
+library(countrycode)
+library(classInt)
+library(RColorBrewer)
+library(stringr)
+
+setwd("C:/Users/Misha/Dropbox/Projects/EM Internship/Quantitative team/2015")
+#setwd("~/Dropbox/Projects/EM Internship/Quantitative team/2015")
+
+dataset <- read.csv("../Media/2015/Master_tables/bigtable.csv", na.strings = c("", " ", "No answer", "N/A", "NA", "Other (please specify)"), header = TRUE)
+dataset$X <- NULL
+dataset$B.2.2.a.If.you.feel.comfortable.describe.any.inappropriate.conduct.or.sexual.harassment.issues.you.have.witnessed.or.have.been.the.subject.of.and.the.support.you.have.received.The.answers.to.this.question.will.not.be.shared.with.Erasmus.Mundus.course._Open.Ended.Response <- NULL
+
+### ordered levels that were used in the survey
+likert_levels <- c("Very unsatisfied", "Somewhat unsatisfied", "Somewhat satisfied", "Very satisfied")
+agree_levels <- c("Disagree", "Somewhat disagree", "Somewhat agree", "Agree")
+
+### questions that need to be printed out
+questions <- c('B.1.1', 'B.1.3', 'B.2.1', 'B.2.2', 'C.1', #overall program satisfaction
+               "L.4", "L.5", "L.6", 'L.3.a', 'L.2.a', #internship/field experience
+               "N.1.1", "N.1.3", "N.2.1", "N.2.2", "N.3.1", "N.4.1", #satisfaction in first university
+               "O.1.1", "O.1.3", "O.2.1", "O.2.2", "O.3.1", "O.4.1", #satisfaction in second university
+               "P.1.1", "P.1.3", "P.2.1", "P.2.2", "P.3.1", "P.4.1", #satisfaction in third university
+               "Q.1.1", "Q.1.3", "Q.2.1", "Q.2.2", "Q.3.1", "Q.4.1") #satisfaction in fourth university
+
+### finding out courses with 10 or more respondents in the dataset
+tenormore <- dataset %>%
+  select(A.2.name.of.Erasmus.Mundus.master.course.) %>%
+  group_by(A.2.name.of.Erasmus.Mundus.master.course.) %>%
+  summarise(respondents = n()) %>%
+  filter(respondents >= 10)
+colnames(tenormore) <- c("Course", "Respondents")
+
+### taking only those entries further for analysis
+dataset <- dataset[(dataset$A.2.name.of.Erasmus.Mundus.master.course. %in% tenormore$Course),]
+
+overall <- select(dataset,
+                  RespondentID_,
+                  starts_with("A."),
+                  starts_with("X."),
+                  starts_with("B."),
+                  starts_with("C."),
+                  starts_with("L."),
+                  starts_with("N"),
+                  starts_with("O"),
+                  starts_with("P"),
+                  starts_with("Q"),
+                  I.am.currently._Response)
+
+
 # http://stackoverflow.com/questions/32136304/conditional-calculation-of-mean
 # function calculates the mean only if there are 10 or more respondents to each individual question
 f1 <- function(x) if(sum(!is.na(x)) >= 10) mean(as.numeric(x), na.rm=TRUE) else NA_real_
@@ -98,9 +156,11 @@ extract_name <- function(x, dataset = overall){
   
   ### x = string containing the identifier of the question (e.g. "B.1.3")
   question <- dataset[, substr(names(dataset), 1, nchar(x)) == x]
+  
   name_of_the_question <- gsub("(.*)_(.*)", "\\1", colnames(question)[1]) #storing the name of the section for title of the plot
   name_of_the_question <- substring(name_of_the_question, nchar(x)+1)
   name_of_the_question <- gsub("\\.", " ", name_of_the_question)
+  name_of_the_question <- gsub("the first", "this", name_of_the_question)
   
   return(name_of_the_question)
 }
@@ -148,7 +208,7 @@ comparative_df <- function(x, course_dataset){
   #cleaning the means_question dataset to use it in a table
   names(means_question) <- c("Mean", "Respondents")
   means_question <- means_question[2:nrow(means_question),]
-  means_question$Mean <- as.numeric(as.character(means_question$Mean))
+  means_question$Mean <- round(as.numeric(as.character(means_question$Mean)), 2)
   means_question$Respondents <- as.numeric(as.character(means_question$Respondents))
   
   #calculating means for the entire dataset
@@ -169,6 +229,7 @@ comparative_df <- function(x, course_dataset){
   quartile_info <- merge(quantiles, means_question, by = 0, all = TRUE)
   rownames(quartile_info) <- quartile_info$Row.names
   quartile_info$Row.names <- NULL
+  quartile_info$`100%` <- round(quartile_info$`100%`, 2) + 0.01 #just to make sure that highest mean is recognized by cut
   quartile_info$Mean <- quartile_info$Mean + 0.0001 #just to make sure that lowest means are also recognized by cut
   quartile_info$quartile <- apply(quartile_info, 1, function(x) cut(x[6], x[1:5], include.lowest = TRUE, labels = FALSE))
   quartile_info <- quartile_info["quartile"]
@@ -530,7 +591,8 @@ universityprint <- function(x, course_dataset){
       figheight <- figure_height(x, slice) #calculating height of a figure to print out
       .q <- questionprint(x, slice, save = FALSE, name_of_the_question = paste0(" (n = ", nrow(slice), ")")) #preparing the plot
 
-      #workaround to have next step. Chooses a random number from 1 to 1 million to have as a name of a chunk. Otherwise knitr throws an error since there are chunks with the same name
+      #workaround to have next step. Chooses a random number from 1 to 1 million to have as a name of a chunk. 
+      #Otherwise knitr throws an error since there are chunks with the same name
       cap <- sample(1:1e6, 1)
       
       if(!is.null(.q)){
@@ -557,5 +619,163 @@ cbind.fill <- function(...){
   nm <- lapply(nm, as.matrix)
   n <- max(sapply(nm, nrow)) 
   do.call(cbind, lapply(nm, function (x) 
-    rbind(x, matrix(, n-nrow(x), ncol(x))))) 
+    rbind(x, matrix(, n-nrow(x), ncol(x)))))
+}
+
+
+prepare_university_eair <- function(x, course_dataset, university){
+  # function to prepare a dataset to use in EAIR paper
+  # x = name of the question
+  # course_dataset = dataset that needs to be prepared
+  
+  # returns a dataset:
+  # universities with 10 or more respondents and answers to questions by respondents
+  
+  questions_uni <- c("N.", "O.", "P.", "Q.") #first letters for questions about specific universities
+  x <- substr(x, 3, 5) #updating x to use it in a function. x in the beginning is used to make calls to functions consistent
+  
+  #creating four datasets to merge them leter. Name of the university is used as an ID.
+  
+  #### for paper: can add A.2.name.of.Erasmus.Mundus.master.course. to chunks and then use group_by on that variable to create other chunks
+  first_university <- course_dataset %>%
+    select(University.1, A.2.name.of.Erasmus.Mundus.master.course.,
+           starts_with(paste0(questions_uni[1], x)))
+  second_university <- course_dataset %>%
+    select(University.2, A.2.name.of.Erasmus.Mundus.master.course.,
+           starts_with(paste0(questions_uni[2], x)))
+  third_university <- course_dataset %>%
+    select(University.3, A.2.name.of.Erasmus.Mundus.master.course.,
+           starts_with(paste0(questions_uni[3], x)))
+  fourth_university <- course_dataset %>%
+    select(University.4, A.2.name.of.Erasmus.Mundus.master.course.,
+           starts_with(paste0(questions_uni[4], x)))
+  
+  #since questions are always the same, binding four datasets together
+  z <- rbind(first_university, 
+             setNames(second_university, names(first_university)),
+             setNames(third_university, names(first_university)),
+             setNames(fourth_university, names(first_university)))
+  
+  #deleting dimensions that can be different in different programs
+  if (x == "1.1"){
+    z$N.1.1.Rate.the.following.items.regarding.the.logistic.information.and.support.received.before.the.beginning.of.studies.in.the.first.university._Language.courses <- NULL
+  }
+  if (x == "1.3"){
+    z$N.1.3.Rate.the.introduction.process.to.the.following.units.or.people.as.part.of.the.orientation.program.at.the.first.university._Academic.staff <- NULL
+    z$N.1.3.Rate.the.introduction.process.to.the.following.units.or.people.as.part.of.the.orientation.program.at.the.first.university._Administrative.staff <- NULL
+    z$N.1.3.Rate.the.introduction.process.to.the.following.units.or.people.as.part.of.the.orientation.program.at.the.first.university._Other.students <- NULL
+  }
+  if (x == "2.1"){
+    z$N.2.1.Rate.the.helpfulness.of.the.following.units.of.people.at.the.first.university._Other.students <- NULL
+  }
+
+  
+  names(z) <- gsub("the.first", "this", names(z)) #substituting "the.first" to "this" to make it gramatically correct
+  z <- z[!is.na(z$University.1) & z$University.1 == university,] #removing empty lines and subsetting to only chosen university
+  
+  #finding out names of programs with 10 or more respondents
+  program_names <- z %>%
+    select(A.2.name.of.Erasmus.Mundus.master.course.) %>%
+    group_by(A.2.name.of.Erasmus.Mundus.master.course.) %>%
+    summarise(respondents = n()) %>%
+    filter(respondents >= 10)
+  
+  #deleting column with university since we don't need it anymore
+  z$University.1 <- NULL
+  #leaving only names of programs with 10 or more respondents
+  z <- z[z$A.2.name.of.Erasmus.Mundus.master.course. %in% as.character(program_names$A.2.name.of.Erasmus.Mundus.master.course.),]
+  
+  names(z)[1] <- "name"
+  #cleaning up names
+  colnames(z) <- gsub("\\.", " ", colnames(z)) #making names of questions readable
+  colnames(z) <- gsub("(.*?)_(.*)", "\\2", colnames(z)) #leaving just the dimension name
+  
+  if(x == "5.1") 
+    names(z) <- c("name", "Overall satisfaction in this university")
+  levels <- likert_levels # default is likert_levels
+  
+  ### making sure that levels go in order they were meant to go
+  for(i in 2:ncol(z)) {
+    ### this step will also reduce all other answers to NA's
+    z[,i] <- factor(z[,i], levels = levels)
+  }
+  
+  return(z)
+}
+
+calculatep <- function(x, dataset, university, method = "pvalue"){
+  # function to assign types to comparisons
+  # x = name of the question
+  # dataset = dataset containing necessary information
+  # university = string with a name university
+  # pvalue = if TRUE, will return pvalue, if FALSE will return difference in means
+  
+  # returns a vector of given length with calculated types.
+  
+  #preparing dataset to have information about only a given university
+  z <- prepare_university_eair(x, dataset, university)
+  
+  #calculating means for all dimensions
+  means_question <- z %>% 
+    group_by(name) %>%
+    summarise_each(funs(f1))
+  
+  #preparing empty vector of given length
+  pvalues <- data.frame(matrix(ncol = ncol(z)))
+  pvalues[1] <- as.character(university) #pasting name of a university
+  
+  for (i in 2:ncol(z)){
+    names(pvalues)[i] <- names(z)[i] #pasting name of a dimension
+    
+    #calculating location of a minimum and a maximum in a column
+    minimum <- which.min(as.numeric(unlist(means_question[,i])))
+    maximum <- which.max(as.numeric(unlist(means_question[,i])))
+    
+    #slicing prepared dataset to have information about program with minimal and maximum values
+    x <- z[z$name == means_question$name[minimum], ]
+    y <- z[z$name == means_question$name[maximum], ]
+    
+    #catch-all condition to make sure that we calculate means only when it makes sense
+    #if there are less than 2 programs, if there are less than 10 observations in any of the programs, NA will be kept in a column
+    if(nrow(means_question) < 2 || nrow(x) < 10 || nrow(y) < 10 || sum(!is.na(means_question[,i])) == 1) 
+      next
+    else {
+#       if(method == "pvalue") 
+#         pvalues[1, i] <- t.test(as.numeric(x[,i]), as.numeric(y[,i]))$p.value
+#       if (method == "mean")
+#         pvalues[1, i] <- abs(mean(as.numeric(x[,i]), na.rm = TRUE) - mean(as.numeric(y[,i]), na.rm = TRUE))
+      temp <- t.test(as.numeric(x[,i]), as.numeric(y[,i]))$p.value
+      if(temp < 0.05)
+        pvalues[1, i] <- 3
+      else if (mean(as.numeric(x[,i]), na.rm = TRUE) > 3 & mean(as.numeric(y[,i]), na.rm = TRUE) > 3)
+        pvalues[1, i] <- 1
+      else if (mean(as.numeric(x[,i]), na.rm = TRUE) < 2.5 & mean(as.numeric(y[,i]), na.rm = TRUE) < 2.5)
+        pvalues[1, i] <- 2
+      else
+        pvalues[1, i] <- 4
+    }
+  }
+  return (pvalues)
+}
+
+
+calculateallp <- function(x, dataset, universities, method){
+  # function to calculate p-values for all universities in a dataset for a given question
+  # x = name of the question
+  # dataset = dataset with information
+  # universities = data frame containing names of universities with 3 or more programs
+  # pvalue = if TRUE, will return pvalue, if FALSE will return difference in means
+  
+  
+  # returns a data frame with p-values for every dimension and every university. If p-value couldn't have been calculated, cell will have NA
+  
+  #calculating sample vector to initialize returning data frame 
+  z <- calculatep(x, dataset, universities$value[1], method = method)
+  pvalues <- data.frame(matrix(ncol = ncol(z), nrow = nrow(universities)))
+  names(pvalues) <- names(z) #setting names to have names of dimensions
+  
+  for (i in 1:nrow(universities)){
+    pvalues[i,] <- calculatep(x, dataset, universities$value[i], method = method)
+  }
+  return(pvalues)
 }

@@ -1,4 +1,5 @@
 library(plyr)
+library(tidyr)
 library(dplyr)
 library(likert)
 library(scales)
@@ -12,11 +13,11 @@ loadfonts()
 Sys.setenv(R_GSCMD = "C:/Program Files/gs/gs9.16/bin/gswin64c.exe")
 
 setwd("C:/Users/Misha/Dropbox/Projects/EM Internship/Quantitative team/2015")
-source("functions.R")
-text_data <- read.csv("./Reports/text_data.csv", encoding = "UTF-8")
 
 dataset <- read.csv("../Media/2015/Master_tables/bigtable.csv", na.strings = c("", " ", "No answer", "N/A", "NA"), header = TRUE)
 dataset$X <- NULL
+text_data <- read.csv("./Reports/text_data.csv", encoding = "UTF-8")
+source("functions.R")
 
 ### ordered levels that were used in the survey
 likert_levels <- c("Very unsatisfied", "Somewhat unsatisfied", "Somewhat satisfied", "Very satisfied")
@@ -41,8 +42,9 @@ colnames(tenormore) <- c("Course", "Respondents")
 
 source("functions.R")
 today_date <- as.character(format(Sys.Date(), "%d %b %Y"))
+
 #http://reed.edu/data-at-reed/software/R/markdown_multiple_reports.html
-for (i in 3:22){
+for (i in 22:22){
   course_dataset <- dataset[dataset$A.2.name.of.Erasmus.Mundus.master.course. == tenormore$Course[i],]
   text_dataset <- text_data[text_data$Course == tenormore$Course[i],]
 
