@@ -195,6 +195,9 @@ comparative_df <- function(x, course_dataset){
   ### x = name of the question.
   overall_dataset <- question_prepare(x, dataset)[[1]]
   question_dataset <- question_prepare(x, course_dataset)[[1]]
+  
+  #this step is needed to properly calculate the height of the plot for individual universities
+  names(overall_dataset) <- gsub(pattern = "the first", replacement = "this", names(overall_dataset))
 
   #calculating means for a specific course
   means_question <- question_dataset %>% 
@@ -225,12 +228,14 @@ comparative_df <- function(x, course_dataset){
 
   #calculating means for each course and each question to create a quantile variable
   means_overall_each <- means_prepare(x)[[1]]
+  #this step is needed to properly calculate the height of the plot for individual universities
+  names(means_overall_each) <- gsub(pattern = "the first", replacement = "this", names(means_overall_each)) 
   quantiles <- as.data.frame(t(apply(X = means_overall_each, FUN = function(x) quantile(x, na.rm = TRUE), MARGIN = 2)))
   quartile_info <- merge(quantiles, means_question, by = 0, all = TRUE)
   rownames(quartile_info) <- quartile_info$Row.names
   quartile_info$Row.names <- NULL
   quartile_info$`100%` <- round(quartile_info$`100%`, 2) + 0.01 #just to make sure that highest mean is recognized by cut
-  quartile_info$Mean <- quartile_info$Mean + 0.0001 #just to make sure that lowest means are also recognized by cut
+  quartile_info$Mean <- quartile_info$Mean + 0.01 #just to make sure that lowest means are also recognized by cut
   quartile_info$quartile <- apply(quartile_info, 1, function(x) cut(x[6], x[1:5], include.lowest = TRUE, labels = FALSE))
   quartile_info <- quartile_info["quartile"]
   
@@ -492,9 +497,9 @@ figure_height <- function(question, course_dataset){
   
   try_flag <- tryCatch(comparative_df(question, course_dataset), error = function(err) return(TRUE)) 
   if(!is.logical(try_flag)){ #checking if try_flag is logical. If it is, then do nothing. Otherwise print out the information about the question.
-     return (1+0.42*nrow(comparative_df(question, course_dataset)))
+     return (1 + 0.42*nrow(comparative_df(question, course_dataset)))
   } else
-    return (0) #return 0 height in case there is nothing to print
+    return (1) #return 0 height in case there is nothing to print
 }
   
 plot_question <- function(question, name_of_the_question){
@@ -523,7 +528,7 @@ plot_question <- function(question, name_of_the_question){
           plot.title = element_text(size = 10)) + #size of the text in the title
     geom_hline(yintercept=seq(25, 75, by=25), linetype = "dashed", size = 0.2) + # adding dashed lines at 25, 50, 75% to make it more clear
     coord_fixed() +
-    coord_flip(ylim = c(-1,101)) #reducing white space left to 0 and right to 100
+    coord_flip(ylim = c(3,97)) #reducing white space left to 0 and right to 100
   return(p)
 }
 
@@ -585,10 +590,16 @@ universityprint <- function(x, course_dataset){
   if (length(as.character(unique(z$University.1))) > 0) {
     #sorting university names alphabetically
     university_names <- sort(as.character(unique(z$University.1)))
+    counts <- z %>% group_by(University.1) %>% summarise_each(funs(f2))
+    row.names(counts) <- counts$University.1
+    counts$University.1 <- NULL
+    counts$rows <- rowSums(counts > 10)
+    
     
     for(i in seq_along(university_names)){
       slice <- z[z$University.1 == university_names[i], ]
-      figheight <- figure_height(x, slice) #calculating height of a figure to print out
+      n <- as.numeric(counts[rownames(counts) == university_names[i],"rows"])
+      figheight <- 1 + 0.42 * n #calculating height of a figure to print out
       .q <- questionprint(x, slice, save = FALSE, name_of_the_question = paste0(" (n = ", nrow(slice), ")")) #preparing the plot
 
       #workaround to have next step. Chooses a random number from 1 to 1 million to have as a name of a chunk. 
@@ -608,7 +619,7 @@ kexpand <- function(.q, figheight, cap, university_name){
   
   cat(knit(
     text=knit_expand(text=
-                    "```{r-{{cap}}, echo=FALSE, message = FALSE, warning = FALSE}\n cat(university_name)\n .q\n```\n"
+                    "```{r-{{cap}}, fig.height = {{figheight}}, echo=FALSE, message = FALSE, warning = FALSE}\n cat(university_name)\n .q\n```\n"
     )
   ))
 }

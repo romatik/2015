@@ -128,6 +128,7 @@ df <- comparative_df(questions[1], course_dataset)
 z <- xtable(df, caption = sprintf("Summary statistics for %s question", questions[1]), digits = c(0,0,2,2,2,2,2,2,2), type = "html")
 align(z) <- "|p{5.5cm}|cc|c|lllll|"
 print(z, type = "html")
+
 #########################################################################################################################################
 #dataset with number of programs in different universities
 universities <- dataset %>%
@@ -145,3 +146,10 @@ programs <- dataset %>%
   melt(, id.vars = c("A.2.name.of.Erasmus.Mundus.master.course.")) %>%
   select(A.2.name.of.Erasmus.Mundus.master.course., value) %>%
   unique() 
+
+#########################################################################################################################################
+#text analysis
+require(stringi)
+text_data <- read.csv("./Reports/text_data.csv", encoding = "UTF-8")
+text <- text_data %>% select(starts_with("X"))
+word_counts <- as.data.frame(apply(text, 2, function(x) stri_count(x, regex = "\\S+")))

@@ -1,6 +1,5 @@
 ---
 title: "`r as.character(tenormore$Course[i])`"
-author: "Course Quality Advisory Board of the Erasmus Mundus Student and Alumni Association"
 date: "Report was generated on `r today_date`"
 output: 
   pdf_document:
@@ -32,6 +31,7 @@ suppressWarnings(suppressPackageStartupMessages(library(grid)))
 suppressWarnings(suppressPackageStartupMessages(library(RColorBrewer)))
 suppressWarnings(suppressPackageStartupMessages(library(xtable)))
 suppressWarnings(suppressPackageStartupMessages(library(tidyr)))
+suppressWarnings(suppressPackageStartupMessages(library(rmarkdown)))
 
 library(knitr)
 library(markdown)
@@ -223,4 +223,5 @@ report_question("L.2.a", course_dataset, text_dataset[,15])
 #Acknowledgments
 
 *Primary analyst*: `r as.character(text_dataset[,2])`
+
 *Secondary analyst*: `r as.character(text_dataset[,3])`
