@@ -593,11 +593,13 @@ universityprint <- function(x, course_dataset){
     counts <- z %>% group_by(University.1) %>% summarise_each(funs(f2))
     row.names(counts) <- counts$University.1
     counts$University.1 <- NULL
-    counts$rows <- rowSums(counts > 10)
+    counts$rows <- rowSums(counts >= 10)
     
     
     for(i in seq_along(university_names)){
       slice <- z[z$University.1 == university_names[i], ]
+      
+      #calculating number of dimensions to print out
       n <- as.numeric(counts[rownames(counts) == university_names[i],"rows"])
       figheight <- 1 + 0.42 * n #calculating height of a figure to print out
       .q <- questionprint(x, slice, save = FALSE, name_of_the_question = paste0(" (n = ", nrow(slice), ")")) #preparing the plot
