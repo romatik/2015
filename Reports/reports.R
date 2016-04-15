@@ -7,11 +7,13 @@ Sys.setenv(R_GSCMD = "C:/Program Files/gs/gs9.16/bin/gswin64c.exe")
 
 source("functions.R")
 text_data <- read.csv("./Reports/text_data.csv", encoding = "UTF-8")
+text_data$Proofreader <- NULL
+names(text_data)[1] <- "Course"
 
 today_date <- as.character(format(Sys.Date(), "%d %b %Y"))
 
 #http://reed.edu/data-at-reed/software/R/markdown_multiple_reports.html
-for (i in 1:1){
+for (i in 16:16){
   course_dataset <- dataset[dataset$A.2.name.of.Erasmus.Mundus.master.course. == tenormore$Course[i],]
   text_dataset <- text_data[text_data$Course == as.character(tenormore$Course)[i],]
 

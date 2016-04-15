@@ -368,61 +368,62 @@ report_question <- function(question, course_dataset, text_data = NULL){
   
   switch(question,
          B.1.1 = {
-           first_heading <- '###Consortia\n'
+           first_heading <- '###Consortium\n'
            intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
            graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
            table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
          },
          B.1.3 = {
-           first_heading <- '###Consortia\n'
+           first_heading <- '###Consortium\n'
            intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
            graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
            table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
          },
          B.2.1 = {
-           first_heading <- '###Consortia\n'
+           first_heading <- '###Consortium\n'
            intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
            graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
            table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
          },
          B.2.2 = {
-           first_heading <- '###Consortia\n'
+           above_heading <- "##Support received on various issues\n"
+           first_heading <- '###Consortium\n'
            intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
            graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
            table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
          },
          C.1 = {
-           first_heading <- '###Consortia\n'
+           first_heading <- '###Consortium\n'
            intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
            graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
            table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
          },
          L.2.a = {
-           first_heading <- '##Internship experience.\n'
+           above_heading <- '##Internship\n'
            intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
            graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
            table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
          },
          L.3.a = {
-           first_heading <- '##Field experience.\n'
+           above_heading <- '##Field\n'
            intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
            graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
            table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
          },
          L.4 = {
-           first_heading <- '##First supervisor.\n'
+           above_heading <- '##First supervisor\n'
            intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
            graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
            table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
          },
          L.5 = {
-           first_heading <- '##Second supervisor.\n'
+           above_heading <- '##Second supervisor\n'
            intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
            graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
            table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
          },
          L.6 = {
-           first_heading <- '##Personal development.\n'
+           above_heading <- '##Personal development\n'
            intro_text <- 'Some introductory text about this particular question. Likely to be the same for all courses.\n'
            graph_text <- 'Some supporting text explaining the graph and highlighting some of the issues. Should be individual for each course.\n'
            table_text <- 'Some supporting about the table and highlighting some of the issues. Should be individual for each course.\n'
@@ -434,9 +435,10 @@ report_question <- function(question, course_dataset, text_data = NULL){
   try_flag <- tryCatch(comparative_df(question, course_dataset), error = function(err) return(TRUE)) 
   
   if(!is.logical(try_flag)){ #checking if try_flag is logical. If it is, then do nothing. Otherwise print out the information about the question.
-    cat(sprintf("\n%s\n", text_data))
     
-    cat(sprintf("\n%s\n\n", first_heading))
+    if(!tryCatch(exists(above_heading), error = function(err) return(TRUE))) cat(sprintf("\n%s\n\n", above_heading))
+    cat(sprintf("\n%s\n\n", text_data))
+    if(!tryCatch(exists(first_heading), error = function(err) return(TRUE))) cat(sprintf("\n%s\n\n", first_heading))
     #cat(intro_text)
     
     #prtinting out the question
@@ -520,7 +522,7 @@ plot_question <- function(question, name_of_the_question){
             group.order = sort(names(question))) + 
     ggtitle(name_of_the_question) + # title of the question
     theme(text = element_text(size = 10, family = "Times New Roman"), # setting the text size of the plot
-          plot.margin = unit(c(0, 0.8, 0.3, 0), "lines"), # decreasing white space around the plot
+          plot.margin = unit(c(0.3, 0.8, 0.3, 0), "lines"), # decreasing white space around the plot
           legend.margin = unit(0, "lines"), # deleting space around legend
           legend.key.size = unit(0.5, "lines"), # decreasing size of legend elements
           legend.background = element_rect(colour = "gray", fill = NA, size = 0.1), # adding a frame around the legend
@@ -578,7 +580,7 @@ prepare_university <- function(x, course_dataset){
   return(z)
 }
 
-universityprint <- function(x, course_dataset){
+universityprint <- function(x, course_dataset, text_data = NULL){
   #function to print out information about specific university
   #x = name of the question to print out
   #course_dataset = dataset containing information about one course
@@ -595,6 +597,11 @@ universityprint <- function(x, course_dataset){
     counts$University.1 <- NULL
     counts$rows <- rowSums(counts >= 10)
     
+    #printing out heading for the Teaching/learning question
+    if(x == "N.4.1")
+      cat(sprintf("\n%s\n\n", "##Teaching/learning"))
+    if(!is.null(text_data))
+      cat(sprintf("\n%s\n\n", text_data))
     
     for(i in seq_along(university_names)){
       slice <- z[z$University.1 == university_names[i], ]

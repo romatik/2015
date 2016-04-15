@@ -470,3 +470,30 @@ bigtable_temp$University.3 <- gsub("Ecole polytechnique federale de Lausanne, Sw
 bigtable_temp$University.4 <- gsub("Ecole polytechnique federale de Lausanne, Switzerland", "Swiss Federal Institute of Technology Lausanne, Switzerland", bigtable_temp$University.4)
 
 write.csv(x = bigtable_temp, file = "bigtable.csv") #"2016-01-23 18:21:39 MSK"
+
+#######################################################################################
+### anonymyzing for course browser
+bigtable <- read.csv("../Media/2015/Master_tables/bigtable.csv", na.strings = c("", " ", "No answer", "N/A", "NA"), header = TRUE)
+bigtable$X <- NULL
+bigtable_temp <- bigtable
+bigtable_temp$RespondentID_ <- NULL
+bigtable_temp$StartDate_ <- NULL
+bigtable_temp$CollectorID_ <- NULL
+bigtable_temp$EndDate_ <- NULL
+bigtable_temp$IP.Address_ <- NULL
+bigtable_temp$A.1.Please.create.a.unique.identification.code.Just.type.in.birthday.in.the.format.DD.MO.YY.and.the.first.two.letters.of.first.name.followed.by.the.first.two.letters.of.first.name.and.first.two.letter.of.last.name.For.example.Maris.Miller.was.born.on.October.9.1975.So.her.code.would.be.091075MAMI._Open.Ended.Response <- NULL
+bigtable_temp$A.8.Age._Response <- NULL
+bigtable_temp$A.5.When.did.you.start.EM.Course._Response <- NULL
+bigtable_temp$A.6.When.did.you.will.you.finish.EM.Course._Response <- NULL
+
+write.csv(x = bigtable_temp, file = "course_browser_anonymized.csv") # "2016-03-08 12:15:02 MSK"
+
+########################################################################################
+### changing the name of the course IMAE -> EMAE since management changed, but students replied to EMAE
+bigtable <- read.csv("../Media/2015/Master_tables/bigtable.csv", na.strings = c("", " ", "No answer", "N/A", "NA"), header = TRUE)
+bigtable$X <- NULL
+bigtable_temp <- bigtable
+
+bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course. <- gsub(pattern = "IMAE-International Master in Applied Ecology", 
+                                                          replacement = "EMAE students - European Master in Applied Ecology", x = bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course.)
+write.csv(x = bigtable_temp, file = "bigtable.csv") #  "2016-04-15 19:46:05 MSK"
