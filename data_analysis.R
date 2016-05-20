@@ -1,3 +1,4 @@
+source("functions.R")
 z <- dataset %>%
   dplyr::select(starts_with("B.1.1"),
          starts_with("B.1.3"),

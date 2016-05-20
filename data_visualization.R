@@ -54,7 +54,7 @@ for (i in seq_along(questions)){
 
 #########################################################################################################################################
 ### example of printing with a grouping
-questionprint_grouping("B.1.1", grouping = overall$A.9.Gender._Response, grouping_levels = c("Male", "Female"))
+questionprint_grouping("B.1.1", overall, grouping = overall$A.9.Gender._Response, grouping_levels = c("Male", "Female"))
 
 
 #########################################################################################################################################
@@ -153,3 +153,17 @@ require(stringi)
 text_data <- read.csv("./Reports/text_data.csv", encoding = "UTF-8")
 text <- text_data %>% select(starts_with("X"))
 word_counts <- as.data.frame(apply(text, 2, function(x) stri_count(x, regex = "\\S+")))
+
+#########################################################################################################################################
+z <- dataset %>%
+  select(A.2.name.of.Erasmus.Mundus.master.course., University.1, University.2, University.3, University.4)%>%
+  melt(na.rm = TRUE, id = "A.2.name.of.Erasmus.Mundus.master.course.") %>%
+  group_by(A.2.name.of.Erasmus.Mundus.master.course.) %>%
+  distinct(value)
+
+z$variable <- NULL
+temp <- dcast(z, A.2.name.of.Erasmus.Mundus.master.course. ~ value)
+df_args <- c(temp, sep ="; ")
+f <- do.call(paste, df_args)
+f <- gsub(" NA;", "", f)
+write.csv(file = "universities10.csv", f)

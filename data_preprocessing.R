@@ -497,3 +497,8 @@ bigtable_temp <- bigtable
 bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course. <- gsub(pattern = "IMAE-International Master in Applied Ecology", 
                                                           replacement = "EMAE students - European Master in Applied Ecology", x = bigtable_temp$A.2.name.of.Erasmus.Mundus.master.course.)
 write.csv(x = bigtable_temp, file = "bigtable.csv") #  "2016-04-15 19:46:05 MSK"
+
+########################################################################################
+Sheet_1 <- read.csv("C:/Users/Misha/Dropbox/Projects/EM Internship/Quantitative team/Sheet_1.csv")
+names(Sheet_1)[2] <- "Course"
+z <- dplyr::inner_join(tenormore, Sheet_1, by = "Course")

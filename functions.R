@@ -2,7 +2,6 @@ library(dplyr)
 library(likert)
 library(scales)
 library(psych)
-library(reshape)
 library(grid)
 library(RColorBrewer)
 library(tidyr)
@@ -11,6 +10,7 @@ library(countrycode)
 library(classInt)
 library(RColorBrewer)
 library(stringr)
+library(reshape2)
 
 setwd("C:/Users/Misha/Dropbox/Projects/EM Internship/Quantitative team/2015")
 #setwd("~/Dropbox/Projects/EM Internship/Quantitative team/2015")
@@ -40,7 +40,7 @@ tenormore <- dataset %>%
 colnames(tenormore) <- c("Course", "Respondents")
 
 ### taking only those entries further for analysis
-dataset <- dataset[(dataset$A.2.name.of.Erasmus.Mundus.master.course. %in% tenormore$Course),]
+#dataset <- dataset[(dataset$A.2.name.of.Erasmus.Mundus.master.course. %in% tenormore$Course),]
 
 overall <- select(dataset,
                   RespondentID_,
@@ -468,7 +468,7 @@ means_printing <- function(x){
   # getting the means table for a given question
   means <- means_prepare(x)[[1]]
   # melting the means table to use it in plotting
-  melted_means <- as.data.frame(melt(as.matrix(means)))
+  melted_means <- as.data.frame(reshape2::melt(as.matrix(means)))
 
   #getting name of the question
   name_of_the_question <- extract_name(x)
@@ -479,7 +479,7 @@ means_printing <- function(x){
   wrap_function_label <- wrap_format(40)
 
   #plotting
-  p <- ggplot(melted_means, aes(y = value, x = X2)) + 
+  p <- ggplot(melted_means, aes(y = value, x = Var2)) + 
     ggtitle(name_of_the_question) +
     geom_boxplot() + 
     coord_flip() + 
@@ -489,7 +489,8 @@ means_printing <- function(x){
     theme(axis.title.y=element_blank())
 
   #saving the resulting graph
-  ggsave(filename = sprintf("./Mean_plots/%s.png", x), plot = p, units = "mm", width = 250, height = (70 + length(levels(factor(melted_means$X2)))*10))
+  #ggsave(filename = sprintf("./Mean_plots/%s.png", x), plot = p, units = "mm", width = 250, height = (70 + length(levels(factor(melted_means$X2)))*10))
+  return(p)
 }
 
 figure_height <- function(question, course_dataset){
@@ -766,13 +767,13 @@ calculatep <- function(x, dataset, university, method = "pvalue"){
 #         pvalues[1, i] <- abs(mean(as.numeric(x[,i]), na.rm = TRUE) - mean(as.numeric(y[,i]), na.rm = TRUE))
       temp <- t.test(as.numeric(x[,i]), as.numeric(y[,i]))$p.value
       if(temp < 0.05)
-        pvalues[1, i] <- 3
+        pvalues[1, i] <- "Type 3"
       else if (mean(as.numeric(x[,i]), na.rm = TRUE) > 3 & mean(as.numeric(y[,i]), na.rm = TRUE) > 3)
-        pvalues[1, i] <- 1
+        pvalues[1, i] <- "Type 1"
       else if (mean(as.numeric(x[,i]), na.rm = TRUE) < 2.5 & mean(as.numeric(y[,i]), na.rm = TRUE) < 2.5)
-        pvalues[1, i] <- 2
+        pvalues[1, i] <- "Type 2"
       else
-        pvalues[1, i] <- 4
+        pvalues[1, i] <- "Undefined"
     }
   }
   return (pvalues)
@@ -797,5 +798,7 @@ calculateallp <- function(x, dataset, universities, method){
   for (i in 1:nrow(universities)){
     pvalues[i,] <- calculatep(x, dataset, universities$value[i], method = method)
   }
-  return(pvalues)
+  pvalues[,2:ncol(pvalues)] <- lapply(pvalues[,2:ncol(pvalues)], FUN = function(x) as.factor(x))
+  pvalues <- pvalues[rowSums(is.na(pvalues)) < ncol(pvalues) - 1, ]
+  return(as.data.frame(pvalues))
 }

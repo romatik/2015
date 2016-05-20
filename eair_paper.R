@@ -8,7 +8,7 @@ universities <- dataset %>%
   unique() %>%
   group_by(value) %>%
   tally() %>%
-  filter(n > 2) #change here to change how many programs should be present for further analysis
+  filter(n >= 2) #change here to change how many programs should be present for further analysis
 
 #deleting NA's
 universities <- universities[complete.cases(universities),]
@@ -17,7 +17,7 @@ universities <- universities[complete.cases(universities),]
 #dataset to check what programs were hosted by chosen university
 programs <- dataset %>%
   select(A.2.name.of.Erasmus.Mundus.master.course., University.1, University.2, University.3, University.4) %>%
-  melt(, id.vars = c("A.2.name.of.Erasmus.Mundus.master.course.")) %>%
+  melt(., id.vars = c("A.2.name.of.Erasmus.Mundus.master.course.")) %>%
   select(A.2.name.of.Erasmus.Mundus.master.course., value) %>%
   unique() 
 
@@ -38,3 +38,5 @@ table(everydim$value)
 
 overallsatisf <- calculateallp("N.5.1", dataset, universities, method = "mean")
 cor(question1$sum[!is.na(overallsatisf[,2])], overallsatisf[!is.na(overallsatisf[,2]),2])
+
+summary(as.factor(rowSums(question4 == "Type 3", na.rm = TRUE))) #number of universities with Type 3 dimensions

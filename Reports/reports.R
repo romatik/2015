@@ -30,3 +30,8 @@ for (i in 16:16){
 rmarkdown::render('./Reports/second_phase.Rmd',
                   output_format = "pdf_document",
                   output_file =  paste("second_phase.pdf", sep=''))
+
+rmarkdown::render('./Reports/cqss2015.Rmd',
+                  output_format = "html_document",
+                  output_file =  paste("cqss2015.html", sep=''))
+
