@@ -31,6 +31,13 @@ rmarkdown::render('./Reports/second_phase.Rmd',
                   output_format = "pdf_document",
                   output_file =  paste("second_phase.pdf", sep=''))
 
+
+logo_color <- '#004E86'
+background_color <- '#ABDCD6'
+accent1 <- '#763A7A'
+accent2 <- '#F1684E'
+background_text <- '#F6F3EC'
+
 rmarkdown::render('./Reports/cqss2015.Rmd',
                   output_format = "html_document",
                   output_file =  paste("cqss2015.html", sep=''))

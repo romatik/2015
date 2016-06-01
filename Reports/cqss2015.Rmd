@@ -1,35 +1,52 @@
 ---
-title: "CQSS 2015"
-author: "Mikhail Balyasin"
-date: "May 20, 2016"
 output: 
   html_document:
     toc: true
+    toc_float: true
+    theme: default
+    css: style.css
+    number_sections: true
 ---
 
 ```{r echo = FALSE}
-library(googleVis)
-library(DT)
-library(plotly)
-library(reshape2)
+suppressPackageStartupMessages(library(googleVis))
+suppressPackageStartupMessages(library(DT))
+suppressPackageStartupMessages(library(plotly))
+suppressPackageStartupMessages(library(reshape2))
 op <- options(gvis.plot.tag='chart')
-knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, results = 'asis', fig.width = 10)
+knitr::opts_chunk$set(echo=FALSE, 
+                      warning=FALSE, 
+                      message=FALSE, 
+                      results = 'asis', 
+                      #fig.width = 8.5,
+                      fig.align = "center",
+                      dev="png",
+                      dev.args=list(type="cairo"),
+                      dpi = 96)
 ```
 
-##Introduction
+<img src="CQAB_large.png" width="100%" align="center" style="margin: 0px 20px"/>
 
-##Forward
+#Introduction
 
-##Course Quality Advisory Board
+#Forward
 
-##Overview of Survey and Report
+#Course Quality Advisory Board
 
-##Overview of EMJMD Programs
+#Overview of Survey and Report
+
+#Overview of EMJMD Programs
 - Brief statement of what EMJD programs are and which ones were analyzed in the survey (list them and/or map them?)
+
+```{r programs, results = "asis", echo = FALSE}
+DT::datatable(tenormore, rownames = FALSE)
+
+```
+
 
 - Which universities were involved and geographical location (perhaps add a map localizing all the universities?)
 
-###Nationalities
+##Nationalities
 ```{r nationalities, results='asis', tidy=FALSE, echo = FALSE}
 overalldf <- overall %>%
   select(A.7.What.is.nationality.please.choose.one.only._Response) %>%
@@ -38,11 +55,12 @@ overalldf <- overall %>%
 names(overalldf) <- c("Country", "respondents")
 overalldf <- overalldf[complete.cases(overalldf$Country),]
 
-Geo <- gvisGeoChart(overalldf, colorvar = "respondents", locationvar = "Country")
+Geo <- gvisGeoChart(overalldf, colorvar = "respondents", locationvar = "Country", 
+                    options = list(colors = "['#F6F3EC','#004E86']"))
 plot(Geo)
 ```
 
-###Gender
+##Gender
 ```{r gender, results = "asis", tidy=FALSE, echo = FALSE, warning=FALSE}
 gender <- as.data.frame(summary(overall$A.9.Gender._Response))
 names(gender) <- c("Number")
@@ -53,13 +71,13 @@ DT::datatable(gender,options = list(dom = 't', searching = FALSE,
 
 ```
 
-###Age
+##Age
 ```{r age, echo = FALSE}
 ggplotly(qplot(overall$A.8.Age._Response))
 
 ```
 
-###Disability
+##Disability
 ```{r disability, results = "asis", echo = FALSE}
 disability <- as.data.frame(summary(overall$A.12.Do.you.have.any.diagnosed.disability._Response))
 names(disability) <- c("Number")
@@ -70,7 +88,7 @@ DT::datatable(disability,options = list(dom = 't', searching = FALSE,
 
 ```
 
-###Start year of studies
+##Year when students began their studies
 ```{r year, results = "asis", echo = FALSE}
 year <- as.data.frame(summary(as.factor(overall$A.5.When.did.you.start.EM.Course._Response)))
 names(year) <- c("Number")
@@ -81,16 +99,7 @@ DT::datatable(year,options = list(searching = FALSE,
 
 ```
 
-###Programs with 10 or more respondents
-```{r programs, results = "asis", echo = FALSE}
-DT::datatable(tenormore,options = list(searching = FALSE,
-                                                    columnDefs = list(list(width = "190px", targets = "_all")),
-                                                    align = "center"
-                                                    ), rownames = FALSE)
-
-```
-
-###Scholarship
+##Scholarship
 ```{r scholarship, results = "asis", echo = FALSE}
 scholarship <- as.data.frame(summary(as.factor(overall$A.10.Have.you.been.awarded.an.Erasmus.Mundus.scholarship.for.master.studies._Response)))
 names(scholarship) <- c("Number")
@@ -103,14 +112,16 @@ DT::datatable(scholarship, options = list(dom = 't', searching = FALSE,
 
 
 
-##Supporting services
+#Supporting services
 
-###Support received before the start of the programs
-```{r supp_before}
+##Support received before the start of the programs
+```{r supp_before, fig.width=8.5}
 z <- gsub("2004|2005|2006|2007|2008|2009|2010|2011", "Alumni", overall$A.5.When.did.you.start.EM.Course._Response)
 levels <-c("Alumni", "2012", "2013", "2014") 
 z <- factor(z, levels = levels)
-ggplotly(means_printing("B.1.1"))
+means_printing_plotly("B.1.1")
+numberofprograms("B.1.1")
+
 ```
 ```{r supp_before_group, fig.height=8}
 questionprint_grouping("B.1.1", overall, grouping = z, grouping_levels = levels)
@@ -118,9 +129,11 @@ questionprint_grouping("B.1.1", overall, grouping = z, grouping_levels = levels)
 ```
 
 
-###Support received during orientation program
-```{r orientation}
-ggplotly(means_printing("B.1.3"))
+##Support received during orientation program
+```{r orientation, fig.width=8.5}
+means_printing_plotly("B.1.3")
+numberofprograms("B.1.3")
+
 ```
 
 ```{r orientation_group, fig.height=10}
@@ -129,10 +142,10 @@ questionprint_grouping("B.1.3", overall, grouping = z, grouping_levels = levels)
 ```
 
 
-###Helpfulness of units and people
-```{r helpfulness}
-ggplotly(means_printing("B.2.1"))
-
+##Helpfulness of units and people
+```{r helpfulness, fig.width=8.5}
+means_printing_plotly("B.2.1")
+numberofprograms("B.2.1")
 ```
 ```{r helpfulness_group, fig.height=10}
 questionprint_grouping("B.2.1", overall, grouping = z, grouping_levels = levels)
@@ -140,73 +153,109 @@ questionprint_grouping("B.2.1", overall, grouping = z, grouping_levels = levels)
 ```
 
 
-###Support received on various issues
-```{r support_on}
-ggplotly(means_printing("B.2.2"))
+##Support received on various issues
+```{r support_on, fig.width=8.5}
+means_printing_plotly("B.2.2")
+numberofprograms("B.2.2")
+```
+```{r support_on_group}
 questionprint_grouping("B.2.2", overall, grouping = z, grouping_levels = levels)
 
 ```
 
-##Assessment and Feedback
+#Assessment and Feedback
 
-###Module assessment
-```{r module_asses}
-ggplotly(means_printing("C.1"))
-
+##Module assessment
+```{r module_asses, fig.height=8, fig.width=8.5}
+means_printing_plotly("C.1")
+numberofprograms("C.1")
 ```
 ```{r module_asses_group, fig.height=12}
 questionprint_grouping("C.1", overall, grouping = z, grouping_levels = levels)
 
 ```
 
-##Teaching/Learning and Supervision
+#Teaching/Learning and Supervision
 
-###Teaching/Learning across different universities
+##Teaching/Learning across different universities
 
-###First supervisor
-```{r first_sup, fig.height=4}
-ggplotly(means_printing("L.4"))
+##First supervisor
+```{r first_sup, fig.height=4, fig.width=8.5}
+means_printing_plotly("L.4")
+numberofprograms("L.4")
+```
+```{r first_sup_group, fig.height=4}
 questionprint_grouping("L.4", overall, grouping = z, grouping_levels = levels)
 ```
 
 
-###Second supervisor
-```{r second_sup, fig.height=4}
-ggplotly(means_printing("L.5"))
+##Second supervisor
+```{r second_sup, fig.height=4, fig.width=8.5}
+means_printing_plotly("L.5")
+numberofprograms("L.5")
+```
+```{r second_sup_group, fig.height=4}
 questionprint_grouping("L.5", overall, grouping = z, grouping_levels = levels)
 
 ```
 
 
-##Internship/Field Experience and Personal Development
+#Internship/Field Experience and Personal Development
 
-###Personal development
-```{r development}
-ggplotly(means_printing("L.6"))
+##Personal development
+```{r development, fig.height=8, fig.width=8.5}
+means_printing_plotly("L.6")
+numberofprograms("L.6")
 ```
 ```{r development_group, fig.height=10}
 questionprint_grouping("L.6", overall, grouping = z, grouping_levels = levels)
 
 ```
 
-###Field experience
-```{r field}
-ggplotly(means_printing("L.3.a"))
+##Field experience
+```{r field, fig.width=8.5}
+means_printing_plotly("L.3.a")
+numberofprograms("L.3.a")
 ```
 ```{r field_group, fig.height=10}
 questionprint_grouping("L.3.a", overall, grouping = z, grouping_levels = levels)
 
 ```
 
-###Internship experience
-```{r internship}
-ggplotly(means_printing("L.2.a"))
+##Internship experience
+```{r internship, fig.width=8.5}
+means_printing_plotly("L.2.a")
+numberofprograms("L.2.a")
 ```
 ```{r internship_group, fig.height=10}
 questionprint_grouping("L.2.a", overall, grouping = z, grouping_levels = levels)
 
 ```
 
-##Additional Remarks
+#Questions about EMA
 
-##Conclusion/Discussion
+##Are you aware of existence of EMA?
+```{r existence}
+existence <- as.data.frame(summary(as.factor(dataset$J.1.Please.answer._Are.you.aware.of.the.existence.of.the.Erasmus.Mundus.Students.and.Alumni.Association.)))
+names(existence) <- "Number"
+DT::datatable(existence, options = list(dom = 't', searching = FALSE,
+                                                    columnDefs = list(list(width = "190px", targets = "_all")),
+                                                    align = "center"
+                                                    ))
+```
+
+##Are you aware that each program can elect EMA Program Representative
+```{r election}
+election <- as.data.frame(summary(as.factor(dataset$X.153_Are.you.aware.that.each.programme.can.elect.an.EMA.Programme.Representative.)))
+names(election) <- "Number"
+DT::datatable(election, options = list(dom = 't', searching = FALSE,
+                                                    columnDefs = list(list(width = "190px", targets = "_all")),
+                                                    align = "center"
+                                                    ))
+
+```
+
+
+#Additional Remarks
+
+#Conclusion/Discussion

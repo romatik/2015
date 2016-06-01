@@ -110,6 +110,9 @@ questionprint_grouping <- function(x, dataset = overall, grouping, grouping_leve
   z <- question_prepare(x, dataset)
   question <- z[[1]]
   name_of_the_question <- z[[2]]
+  wrap_function <- wrap_format(85) #wrap-function to print question correctly
+  name_of_the_question <- wrap_function(name_of_the_question)
+  
   
   grouping_variable <- factor(grouping, levels = grouping_levels)
   question <- question[complete.cases(grouping_variable), ]
@@ -117,7 +120,9 @@ questionprint_grouping <- function(x, dataset = overall, grouping, grouping_leve
   questionl <- likert(question, grouping = grouping_variable)
   
   plot(questionl) +
-    ggtitle(name_of_the_question)
+#    ggtitle(name_of_the_question) +
+    theme(text = element_text(size = 12, family = "Liberation Sans"),
+          plot.title = element_text(size = 14))
 }
 
 question_prepare <- function(x, dataset = overall){
@@ -304,6 +309,7 @@ means_prepare <- function(x){
 #   colnames(means) <- wrap_function_x(colnames(means))
 #   wrap_function_y <- wrap_format(50)
 #   rownames(means) <- wrap_function_y(rownames(means))
+  means <- round(means, digits = 2)
   
   return(list(means, vector))
 }
@@ -483,14 +489,30 @@ means_printing <- function(x){
     ggtitle(name_of_the_question) +
     geom_boxplot() + 
     coord_flip() + 
-    ylab("Distribution of means") +
+    #ylab("Distribution of means") +
     #http://stackoverflow.com/questions/21878974/auto-wrapping-of-labels-via-labeller-label-wrap-in-ggplot2
     scale_x_discrete(labels = function(x) wrap_function_label(x))+
-    theme(axis.title.y=element_blank())
+    theme(axis.title.y=element_blank(),
+          axis.title.x=element_blank(),
+          text = element_text(size = 14, family = "Source Sans Pro"))
 
   #saving the resulting graph
   #ggsave(filename = sprintf("./Mean_plots/%s.png", x), plot = p, units = "mm", width = 250, height = (70 + length(levels(factor(melted_means$X2)))*10))
   return(p)
+}
+
+means_printing_plotly <- function(question){
+  p <- means_printing(question)
+  
+  p <- plotly_build(p)
+  p$layout$yaxis$ticktext <- gsub(pattern = "\n", replacement = "<br>", p$layout$yaxis$ticktext)
+  p$layout$title <- gsub(pattern = "\n", replacement = "<br>", p$layout$title)
+  p$layout$margin$l <- 260
+  p$layout$margin$t <- 70
+  p$layout$width <- 750
+  p$data[[1]]$fillcolor <- paste0('rgba(',paste(col2rgb(background_color), collapse = ','), ',1)')
+  p$layout$plot_bgcolor <- paste0('rgba(',paste(col2rgb(background_text), collapse = ','), ',1)')
+  plotly_build(p)
 }
 
 figure_height <- function(question, course_dataset){
@@ -765,8 +787,8 @@ calculatep <- function(x, dataset, university, method = "pvalue"){
 #         pvalues[1, i] <- t.test(as.numeric(x[,i]), as.numeric(y[,i]))$p.value
 #       if (method == "mean")
 #         pvalues[1, i] <- abs(mean(as.numeric(x[,i]), na.rm = TRUE) - mean(as.numeric(y[,i]), na.rm = TRUE))
-      temp <- t.test(as.numeric(x[,i]), as.numeric(y[,i]))$p.value
-      if(temp < 0.05)
+      temp <- wilcox.test(as.numeric(x[,i]), as.numeric(y[,i]))$p.value
+      if(temp < 0.01)
         pvalues[1, i] <- "Type 3"
       else if (mean(as.numeric(x[,i]), na.rm = TRUE) > 3 & mean(as.numeric(y[,i]), na.rm = TRUE) > 3)
         pvalues[1, i] <- "Type 1"
@@ -801,4 +823,14 @@ calculateallp <- function(x, dataset, universities, method){
   pvalues[,2:ncol(pvalues)] <- lapply(pvalues[,2:ncol(pvalues)], FUN = function(x) as.factor(x))
   pvalues <- pvalues[rowSums(is.na(pvalues)) < ncol(pvalues) - 1, ]
   return(as.data.frame(pvalues))
+}
+
+numberofprograms <- function(question){
+  z <- means_prepare(question)[[1]] %>% summarize_each(funs(sum(!is.na(.))))
+  z <- t(z)
+  colnames(z) <- "Number of programs with valid responses"
+  DT::datatable(z, options = list(dom = 't', searching = FALSE,
+                                            columnDefs = list(list(width = "190px", targets = "_all")),
+                                            align = "center"
+  ))
 }
