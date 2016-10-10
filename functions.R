@@ -503,15 +503,18 @@ means_printing <- function(x){
 
 means_printing_plotly <- function(question){
   p <- means_printing(question)
+  f <- list(family = "Source Sans Pro", size = 45)
+  p %>% layout(font = f)
   
   p <- plotly_build(p)
   p$layout$yaxis$ticktext <- gsub(pattern = "\n", replacement = "<br>", p$layout$yaxis$ticktext)
   p$layout$title <- gsub(pattern = "\n", replacement = "<br>", p$layout$title)
-  p$layout$margin$l <- 260
+  p$layout$margin$l <- 280
   p$layout$margin$t <- 70
   p$layout$width <- 750
   p$data[[1]]$fillcolor <- paste0('rgba(',paste(col2rgb(background_color), collapse = ','), ',1)')
   p$layout$plot_bgcolor <- paste0('rgba(',paste(col2rgb(background_text), collapse = ','), ',1)')
+  
   plotly_build(p)
 }
 

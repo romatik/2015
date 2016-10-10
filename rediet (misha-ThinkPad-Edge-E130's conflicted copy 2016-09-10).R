@@ -56,8 +56,3 @@ rmarkdown::render('./Reports/rediet.Rmd',  # file 2
                   output_format = "html_document",
                   output_file =  "rediet.html", 
                   output_dir = './Reports')
-
-rmarkdown::render('./Reports/rediet_j2.Rmd',
-                  output_format = "html_document",
-                  output_file =  "rediet_j2.html", 
-                  output_dir = './Reports')

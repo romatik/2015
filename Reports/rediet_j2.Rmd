@@ -1,0 +1,46 @@
+---
+title: "Open question J.2"
+output: html_document
+---
+```{r, echo = FALSE}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, results = 'asis')
+z <- dataset
+z <- z[!is.na(z$J.2.What.do.you.think.is.the.most.important.issue.course.representatives.should.address._Open.Ended.Response),]
+
+f <- z %>% 
+  select(A.2.name.of.Erasmus.Mundus.master.course.) %>% 
+  group_by(A.2.name.of.Erasmus.Mundus.master.course.) %>% 
+  summarise(respondents = n()) %>% 
+  filter(respondents >=10) %>%
+  arrange(desc(respondents))
+
+
+```
+#Total number
+In total there were `r nrow(z)` responses and `r length(unique(f$A.2.name.of.Erasmus.Mundus.master.course.))` courses with 10 or more responses.
+
+#Respondents per course
+```{r}
+names(f) <- c("Name of the course", "Respondents")
+knitr::kable(f, caption = sprintf("Number of respondents for each program"))
+```
+
+#Demographic data on students
+```{r}
+ids <- unique(z$RespondentID_)
+respondents <- dataset[dataset$RespondentID_ %in% ids,]
+knitr::kable(as.data.frame(table(respondents$A.4.Have.you.already.graduated.from.EM.course._Response)), caption = c("Graduated or not"), col.names = c("Response", "Frequency"))
+
+knitr::kable(as.data.frame(table(respondents$A.5.When.did.you.start.EM.Course._Response)), caption = c("Start of the program"), col.names = c("Year", "Frequency"))
+
+knitr::kable(as.data.frame(table(respondents$A.6.When.did.you.will.you.finish.EM.Course._Response)), caption = c("End of the program"), col.names = c("Year", "Frequency"))
+
+nationality <- as.data.frame(table(respondents$A.7.What.is.nationality.please.choose.one.only._Response))
+nationality <- nationality[nationality$Freq > 0,]
+knitr::kable(nationality, caption = c("Nationality"), col.names = c("Nationality", "Frequency"))
+
+knitr::kable(as.data.frame(table(respondents$A.9.Gender._Response)), caption = c("Gender"), col.names = c("Gender", "Frequency"))
+
+knitr::kable(as.data.frame(table(respondents$A.10.Have.you.been.awarded.an.Erasmus.Mundus.scholarship.for.master.studies._Response)), caption = c("Scholarship"), col.names = c("Response", "Frequency"))
+
+```
